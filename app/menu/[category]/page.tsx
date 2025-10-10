@@ -15,21 +15,21 @@ const poppins = Poppins({
 // Data produk untuk setiap kategori
 const menuProducts = {
   smoothies: [
-    { 
-      id: 1, 
-      name: 'Strawberry Blast', 
-      price: 'Rp 25.000', 
+    {
+      id: 1,
+      name: 'Strawberry Blast',
+      price: 'Rp 25.000',
       image: '/products/strawberry-smoothie.png',
-      composition: ['Strawberry', 'Yogurt', 'Honey', 'Ice'],
+      composition: ['Strawberry', 'Yogurt', 'Honey'],
       nutrition: { calories: '150', protein: '5g', carbs: '30g', fat: '2g' },
       videoUrl: 'https://www.youtube.com/embed/example1'
     },
   ],
   coffee: [
-    { 
-      id: 1, 
-      name: 'Espresso', 
-      price: 'Rp 18.000', 
+    {
+      id: 1,
+      name: 'Espresso',
+      price: 'Rp 18.000',
       image: '/products/espresso.png',
       composition: ['Arabica Coffee Beans', 'Water'],
       nutrition: { calories: '5', protein: '0g', carbs: '1g', fat: '0g' },
@@ -37,10 +37,10 @@ const menuProducts = {
     },
   ],
   mocktail: [
-    { 
-      id: 1, 
-      name: 'Mojito Mocktail', 
-      price: 'Rp 32.000', 
+    {
+      id: 1,
+      name: 'Mojito Mocktail',
+      price: 'Rp 32.000',
       image: '/products/mojito-mocktail.png',
       composition: ['Lime', 'Mint Leaves', 'Soda Water', 'Sugar'],
       nutrition: { calories: '120', protein: '0g', carbs: '28g', fat: '0g' },
@@ -48,11 +48,29 @@ const menuProducts = {
     },
   ],
   snacks: [
-    { 
-      id: 1, 
-      name: 'Chicken Pop', 
-      price: 'Rp 15.000', 
-      image: '/series/chickenpop.png',
+    {
+      id: 1,
+      name: 'Chicken Pop',
+      price: 'Rp 15.000',
+      image: '/products/chickenpop.png',
+      composition: ['Chicken Breast', 'Bread Crumbs', 'Spices', 'Oil', 'Chicken Breast', 'Bread Crumbs', 'Spices', 'Oil'],
+      nutrition: { calories: '280', protein: '18g', carbs: '20g', fat: '12g' },
+      videoUrl: 'https://www.youtube.com/embed/example4'
+    },
+    {
+      id: 2,
+      name: 'Potato Wedges',
+      price: 'Rp 15.000',
+      image: '/products/potato.png',
+      composition: ['Chicken Breast', 'Bread Crumbs', 'Spices', 'Oil'],
+      nutrition: { calories: '280', protein: '18g', carbs: '20g', fat: '12g' },
+      videoUrl: 'https://www.youtube.com/embed/example4'
+    },
+    {
+      id: 3,
+      name: 'Crispy Tofu',
+      price: 'Rp 15.000',
+      image: '/products/tofu.png',
       composition: ['Chicken Breast', 'Bread Crumbs', 'Spices', 'Oil'],
       nutrition: { calories: '280', protein: '18g', carbs: '20g', fat: '12g' },
       videoUrl: 'https://www.youtube.com/embed/example4'
@@ -118,7 +136,7 @@ export default function CategoryPage() {
       <div className={`min-h-screen bg-[#f5f0eb] flex items-center justify-center ${poppins.className}`}>
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Kategori tidak ditemukan</h1>
-          <button 
+          <button
             onClick={() => router.back()}
             className="bg-[#c17f54] text-white px-6 py-2 rounded-full hover:bg-[#b57049] transition-colors"
           >
@@ -145,7 +163,7 @@ export default function CategoryPage() {
             />
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Cafe</h1>
           </div>
-          <button 
+          <button
             onClick={() => router.back()}
             className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${categoryInfo.buttonColor} flex items-center justify-center text-white transition-colors shadow-md`}
           >
@@ -199,15 +217,15 @@ export default function CategoryPage() {
                 <p className={`text-xl sm:text-2xl font-semibold mb-6 ${categoryInfo.priceColor}`}>
                   {currentProduct.price}
                 </p>
-                
+
                 <div className="flex gap-3">
-                  <button 
+                  <button
                     onClick={toggleCardExpansion}
                     className="flex-1 border-2 border-gray-300 text-gray-700 py-4 rounded-2xl font-semibold hover:bg-gray-50 transition-colors"
                   >
                     Detail Menu
                   </button>
-                  
+
                   <button className={`flex-1 ${categoryInfo.buttonColor} text-white py-4 rounded-2xl font-semibold transition-colors shadow-lg`}>
                     Add to Cart
                   </button>
@@ -241,11 +259,10 @@ export default function CategoryPage() {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide 
-                    ? `${categoryInfo.dotColor} scale-125` 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                  ? `${categoryInfo.dotColor} scale-125`
+                  : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
               />
             ))}
           </div>
@@ -256,11 +273,11 @@ export default function CategoryPage() {
       {expandedCard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
           {/* Backdrop dengan efek blur */}
-          <div 
+          <div
             className="absolute inset-0 bg-[#f5f0eb] bg-opacity-80 backdrop-blur-sm"
             onClick={toggleCardExpansion}
           />
-          
+
           {/* Modal Content - Responsive */}
           <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-sm sm:max-w-md md:max-w-2xl mx-2 sm:mx-4 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto relative z-10">
             <div className="p-4 sm:p-6">
@@ -274,7 +291,7 @@ export default function CategoryPage() {
                     {currentProduct.price}
                   </p>
                 </div>
-                <button 
+                <button
                   onClick={toggleCardExpansion}
                   className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors flex-shrink-0"
                 >
@@ -301,7 +318,7 @@ export default function CategoryPage() {
                 <div className="aspect-w-16 aspect-h-9">
                   <iframe
                     src={currentProduct.videoUrl}
-                    className="w-full h-32 sm:h-40 md:h-48 rounded-lg sm:rounded-xl"
+                    className="w-full h-50 sm:h-40 md:h-48 rounded-lg sm:rounded-xl"
                     title="YouTube video player"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
@@ -309,47 +326,61 @@ export default function CategoryPage() {
                 </div>
               </div>
 
-              {/* Komposisi - Responsive */}
+              {/* Komposisi - 2 kolom di semua ukuran layar */}
               <div className="mb-6 sm:mb-8">
                 <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Komposisi</h4>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  {currentProduct.composition.map((item, index) => (
-                    <div key={index} className="bg-gray-50 rounded-lg sm:rounded-xl p-2 sm:p-3 text-center">
-                      <p className="text-xs sm:text-sm font-medium text-gray-700 break-words">{item}</p>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Kolom Kiri */}
+                  <ul className="space-y-2">
+                    {currentProduct.composition.slice(0, Math.ceil(currentProduct.composition.length / 2)).map((item, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-gray-600 mr-2">•</span>
+                        <span className="text-sm sm:text-base text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* Kolom Kanan */}
+                  <ul className="space-y-2">
+                    {currentProduct.composition.slice(Math.ceil(currentProduct.composition.length / 2)).map((item, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-gray-600 mr-2">•</span>
+                        <span className="text-sm sm:text-base text-gray-700">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
               {/* Informasi Nutrisi - Responsive */}
               <div className="mb-6 sm:mb-8">
                 <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">Informasi Nutrisi</h4>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                  <div className="text-center bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">{currentProduct.nutrition.calories}</p>
-                    <p className="text-xs text-gray-600">Kalori</p>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-sm sm:text-base text-gray-600">Kalori</span>
+                    <span className="text-sm sm:text-base font-semibold text-gray-900">{currentProduct.nutrition.calories}</span>
                   </div>
-                  <div className="text-center bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">{currentProduct.nutrition.protein}</p>
-                    <p className="text-xs text-gray-600">Protein</p>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-sm sm:text-base text-gray-600">Protein</span>
+                    <span className="text-sm sm:text-base font-semibold text-gray-900">{currentProduct.nutrition.protein}</span>
                   </div>
-                  <div className="text-center bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">{currentProduct.nutrition.carbs}</p>
-                    <p className="text-xs text-gray-600">Karbohidrat</p>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-sm sm:text-base text-gray-600">Karbohidrat</span>
+                    <span className="text-sm sm:text-base font-semibold text-gray-900">{currentProduct.nutrition.carbs}</span>
                   </div>
-                  <div className="text-center bg-gray-50 rounded-lg sm:rounded-xl p-3 sm:p-4">
-                    <p className="text-lg sm:text-xl font-bold text-gray-900">{currentProduct.nutrition.fat}</p>
-                    <p className="text-xs text-gray-600">Lemak</p>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-sm sm:text-base text-gray-600">Lemak</span>
+                    <span className="text-sm sm:text-base font-semibold text-gray-900">{currentProduct.nutrition.fat}</span>
                   </div>
                 </div>
               </div>
 
               {/* Tombol Close - Responsive */}
-              <button 
+              <button
                 onClick={toggleCardExpansion}
                 className="w-full border-2 border-gray-300 text-gray-700 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold hover:bg-gray-50 transition-colors text-sm sm:text-base"
               >
-                Tutup Detail
+                Tutup
               </button>
             </div>
           </div>
