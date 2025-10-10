@@ -3,8 +3,9 @@
 
 import Image from 'next/image';
 import { Poppins } from 'next/font/google';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import CartSummary from '../../components/CartSummary';
 
 const poppins = Poppins({
   weight: ['400', '600', '700'],
@@ -27,7 +28,7 @@ const menuProducts = {
   ],
   coffee: [
     {
-      id: 1,
+      id: 2,
       name: 'Espresso',
       price: 'Rp 18.000',
       image: '/products/espresso.png',
@@ -38,7 +39,7 @@ const menuProducts = {
   ],
   mocktail: [
     {
-      id: 1,
+      id: 3,
       name: 'Mojito Mocktail',
       price: 'Rp 32.000',
       image: '/products/mojito-mocktail.png',
@@ -49,7 +50,7 @@ const menuProducts = {
   ],
   snacks: [
     {
-      id: 1,
+      id: 4,
       name: 'Chicken Pop',
       price: 'Rp 15.000',
       image: '/products/chickenpop.png',
@@ -58,7 +59,7 @@ const menuProducts = {
       videoUrl: 'https://www.youtube.com/embed/example4'
     },
     {
-      id: 2,
+      id: 5,
       name: 'Potato Wedges',
       price: 'Rp 15.000',
       image: '/products/potato.png',
@@ -67,7 +68,7 @@ const menuProducts = {
       videoUrl: 'https://www.youtube.com/embed/example4'
     },
     {
-      id: 3,
+      id: 6,
       name: 'Crispy Tofu',
       price: 'Rp 15.000',
       image: '/products/tofu.png',
@@ -111,11 +112,69 @@ export default function CategoryPage() {
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [expandedCard, setExpandedCard] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const [cartItemsCount, setCartItemsCount] = useState(0);
 
   const category = params.category as string;
   const products = menuProducts[category] || [];
   const categoryInfo = categoryData[category];
   const currentProduct = products[currentSlide];
+
+  // Effect untuk update cart count
+  useEffect(() => {
+    const updateCartCount = () => {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        const cart = JSON.parse(savedCart);
+        const total = cart.reduce((sum: number, item: any) => sum + item.quantity, 0);
+        setCartItemsCount(total);
+      } else {
+        setCartItemsCount(0);
+      }
+    };
+
+    // Update saat component mount
+    updateCartCount();
+
+    // Listen untuk event custom ketika cart berubah
+    window.addEventListener('cartUpdated', updateCartCount);
+
+    return () => {
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+
+  // Function untuk menambah ke cart
+  const addToCart = (product: any) => {
+    const savedCart = localStorage.getItem('cart');
+    const currentCart = savedCart ? JSON.parse(savedCart) : [];
+
+    const existingItem = currentCart.find((item: any) => item.id === product.id);
+    let newCart;
+
+    if (existingItem) {
+      newCart = currentCart.map((item: any) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      newCart = [...currentCart, {
+        id: product.id,
+        name: product.name,
+        description: '',
+        price: parseInt(product.price.replace(/\D/g, '')),
+        image: product.image,
+        category: category,
+        quantity: 1
+      }];
+    }
+
+    localStorage.setItem('cart', JSON.stringify(newCart));
+
+    // Trigger event untuk update count di semua component
+    window.dispatchEvent(new Event('cartUpdated'));
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -163,25 +222,43 @@ export default function CategoryPage() {
             />
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Cafe</h1>
           </div>
-          <button
-            onClick={() => router.back()}
-            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${categoryInfo.buttonColor} flex items-center justify-center text-white transition-colors shadow-md`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 sm:h-6 sm:w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+
+          {/* Cart Icon dengan Badge */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCart(true)}
+              className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={() => router.back()}
+              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${categoryInfo.buttonColor} flex items-center justify-center text-white transition-colors shadow-md`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 sm:h-6 sm:w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </header>
 
         {/* Category Title */}
@@ -208,7 +285,7 @@ export default function CategoryPage() {
               </div>
             </div>
 
-            {/* Product Info Card - TETAP SEPERTI SEMULA */}
+            {/* Product Info Card */}
             <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 max-w-md mx-auto p-6 sm:p-8">
               <div className="text-left">
                 <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">
@@ -226,7 +303,10 @@ export default function CategoryPage() {
                     Detail Menu
                   </button>
 
-                  <button className={`flex-1 ${categoryInfo.buttonColor} text-white py-4 rounded-2xl font-semibold transition-colors shadow-lg`}>
+                  <button
+                    onClick={() => addToCart(currentProduct)}
+                    className={`flex-1 ${categoryInfo.buttonColor} text-white py-4 rounded-2xl font-semibold transition-colors shadow-lg`}
+                  >
                     Add to Cart
                   </button>
                 </div>
@@ -386,6 +466,12 @@ export default function CategoryPage() {
           </div>
         </div>
       )}
+
+      {/* Cart Summary */}
+      <CartSummary
+        isOpen={showCart}
+        onClose={() => setShowCart(false)}
+      />
     </div>
   );
 }
