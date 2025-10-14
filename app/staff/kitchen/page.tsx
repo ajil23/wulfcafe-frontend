@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { Poppins } from 'next/font/google';
-import { ChefHat, CheckCircle, Utensils, Clock, User, Table, CheckCheck, Menu, X, Timer, RotateCcw, UtensilsCrossed, CalendarCheck } from 'lucide-react';
+import { ChefHat, CheckCircle, Utensils, Clock, User, Table, CheckCheck, Menu, X, Timer, RotateCcw, UtensilsCrossed, CalendarCheck, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
 const poppins = Poppins({
@@ -376,6 +376,7 @@ export default function KitchenPage() {
             <div className="lg:hidden bg-white border-b border-[#E3E3E3] p-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
+
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                             className="p-2 rounded-lg hover:bg-gray-100"
@@ -410,6 +411,7 @@ export default function KitchenPage() {
                     <div className="p-6 border-b border-[#E3E3E3]">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
+                                <button onClick={() => window.history.back()} className="p-2 hover:bg-orange-100 rounded-lg transition-colors text-gray-500 hover:text-gray-700"><ArrowLeft className="w-5 h-5" /></button>
                                 <Image
                                     src="/wulflogo/wulflogo.png"
                                     alt="Wolf Logo"

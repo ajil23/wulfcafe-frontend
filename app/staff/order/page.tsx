@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Users, Clock, DollarSign, Sparkles, Grid3x3, CheckCircle, XCircle, Calendar, Wrench, X, ChefHat, Utensils, CheckCheck, RotateCcw } from 'lucide-react';
+import { Users, Clock, DollarSign, Sparkles, Grid3x3, CheckCircle, XCircle, Calendar, Wrench, X, ChefHat, Utensils, CheckCheck, RotateCcw, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 
 interface OrderItem {
@@ -245,6 +245,7 @@ export default function OrderPage() {
             <div className="bg-white border-b border-gray-200 px-6 py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
+                        <button onClick={() => window.history.back()} className="p-2 hover:bg-orange-100 rounded-lg transition-color text-gray-500 hover:text-gray-700"><ArrowLeft className="w-5 h-5" /></button>
                         <Image
                             src="/wulflogo/wulflogo.png"
                             alt="Wolf Logo"
