@@ -579,10 +579,12 @@ export default function RestaurantTableSelector({
                                 >
                                     {/* Restaurant sections with labels */}
                                     <svg
-                                        className="absolute inset-0 w-full h-full"
-                                        style={{ pointerEvents: 'none' }}
-                                        viewBox={`0 0 ${containerSize.width} ${containerSize.height}`}
-                                        preserveAspectRatio="xMidYMid meet"
+                                        className="absolute inset-0"
+                                        style={{
+                                            pointerEvents: 'none',
+                                            width: '930px',
+                                            height: '600px'
+                                        }}
                                     >
                                         {/* Indoor section */}
                                         <rect x="40" y="40" width="380" height="200" fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />

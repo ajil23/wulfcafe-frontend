@@ -9,38 +9,6 @@ import TableSelector from '../../components/TableSelector';
 import MenuSelector from '../../components/MenuSelector';
 import PaymentMethod from '../../components/PaymentMethod';
 
-// Sample data
-const sampleTables = [
-    {
-        id: 'TBL-001',
-        number: 'Table 1',
-        capacity: 4,
-        status: 'available' as const,
-        location: 'Main Hall'
-    },
-    {
-        id: 'TBL-002',
-        number: 'Table 2',
-        capacity: 2,
-        status: 'available' as const,
-        location: 'Main Hall'
-    },
-    {
-        id: 'TBL-003',
-        number: 'Table 3',
-        capacity: 6,
-        status: 'available' as const,
-        location: 'Garden'
-    },
-    {
-        id: 'TBL-004',
-        number: 'VIP Room',
-        capacity: 10,
-        status: 'available' as const,
-        location: 'Private'
-    }
-];
-
 const sampleMenu = [
     {
         id: 'MENU-001',
@@ -238,7 +206,6 @@ export default function CashierPage() {
                     <div className="xl:col-span-2 space-y-6">
                         {currentStep === 'tables' && (
                             <TableSelector
-                                tables={sampleTables}
                                 selectedTables={selectedTables}
                                 onTableSelect={setSelectedTables}
                                 maxSelection={4}
