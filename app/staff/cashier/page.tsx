@@ -137,13 +137,15 @@ export default function CashierPage() {
     const canProceedToPayment = customerName.trim().length > 0 || cartItems.length > 0;
     const canConfirmOrder = paymentMethod && cartItems.length > 0;
 
+    // Calculate current step index for progress
+    const stepIndex = ['tables', 'menu', 'customer', 'payment'].indexOf(currentStep);
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
-                <div className="flex items-center justify-between">
+            <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        
                         <Image
                             src="/wulflogo/wulflogo.png"
                             alt="Wolf Logo"
@@ -153,47 +155,85 @@ export default function CashierPage() {
                             priority
                         />
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Cashier</h1>
-                            <p className="text-sm text-gray-600">Process new orders</p>
+                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Cashier</h1>
+                            <p className="text-xs sm:text-sm text-gray-600">Process new orders</p>
                         </div>
                     </div>
                     
-                    {/* Progress Steps */}
-                    <div className="flex items-center gap-4">
-                        {[
-                            { key: 'tables', label: 'Tables' },
-                            { key: 'menu', label: 'Menu' },
-                            { key: 'customer', label: 'Customer' },
-                            { key: 'payment', label: 'Payment' }
-                        ].map((step, index) => (
-                            <div key={step.key} className="flex items-center gap-2">
-                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                                    currentStep === step.key
-                                        ? 'bg-orange-500 text-white'
-                                        : index < ['tables', 'menu', 'customer', 'payment'].indexOf(currentStep)
-                                        ? 'bg-green-500 text-white'
-                                        : 'bg-gray-200 text-gray-600'
-                                }`}>
-                                    {index < ['tables', 'menu', 'customer', 'payment'].indexOf(currentStep) ? (
-                                        <CheckCircle className="w-4 h-4" />
-                                    ) : (
-                                        index + 1
-                                    )}
-                                </div>
-                                <span className={`text-sm font-medium ${
-                                    currentStep === step.key ? 'text-orange-600' : 'text-gray-600'
-                                }`}>
-                                    {step.label}
+                    {/* Progress Steps - Responsive */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                        {/* Mobile Progress Bar */}
+                        <div className="w-full sm:hidden">
+                            <div className="flex justify-between text-xs text-gray-600 mb-2">
+                                <span>Step {stepIndex + 1} of 4</span>
+                                <span className="font-medium">
+                                    {currentStep === 'tables' && 'Selecting Tables'}
+                                    {currentStep === 'menu' && 'Choosing Menu'}
+                                    {currentStep === 'customer' && 'Customer Details'}
+                                    {currentStep === 'payment' && 'Payment'}
                                 </span>
-                                {index < 3 && <div className="w-8 h-0.5 bg-gray-300 mx-2" />}
                             </div>
-                        ))}
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                    className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                    style={{ 
+                                        width: `${((stepIndex + 1) / 4) * 100}%` 
+                                    }}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Desktop Progress Steps */}
+                        <div className="hidden sm:flex items-center gap-2 md:gap-4">
+                            {[
+                                { key: 'tables', label: 'Tables', shortLabel: 'Tbl' },
+                                { key: 'menu', label: 'Menu', shortLabel: 'Menu' },
+                                { key: 'customer', label: 'Customer', shortLabel: 'Cust' },
+                                { key: 'payment', label: 'Payment', shortLabel: 'Pay' }
+                            ].map((step, index) => {
+                                const isCompleted = index < stepIndex;
+                                const isCurrent = currentStep === step.key;
+                                
+                                return (
+                                    <div key={step.key} className="flex items-center gap-2">
+                                        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all ${
+                                            isCurrent
+                                                ? 'bg-orange-500 text-white scale-110'
+                                                : isCompleted
+                                                ? 'bg-green-500 text-white'
+                                                : 'bg-gray-200 text-gray-600'
+                                        }`}>
+                                            {isCompleted ? (
+                                                <CheckCircle className="w-3 h-3 md:w-4 md:h-4" />
+                                            ) : (
+                                                index + 1
+                                            )}
+                                        </div>
+                                        <span className={`text-xs md:text-sm font-medium hidden lg:block ${
+                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
+                                        }`}>
+                                            {step.label}
+                                        </span>
+                                        <span className={`text-xs md:text-sm font-medium lg:hidden ${
+                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
+                                        }`}>
+                                            {step.shortLabel}
+                                        </span>
+                                        {index < 3 && (
+                                            <div className={`w-4 md:w-6 lg:w-8 h-0.5 mx-1 md:mx-2 ${
+                                                index < stepIndex ? 'bg-green-500' : 'bg-gray-300'
+                                            }`} />
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 py-8">
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8">
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8">
                     {/* Main Content */}
                     <div className="xl:col-span-2 space-y-6">
                         {currentStep === 'tables' && (
@@ -215,10 +255,10 @@ export default function CashierPage() {
                         )}
 
                         {currentStep === 'customer' && (
-                            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                                <h3 className="text-xl font-bold text-gray-900 mb-6">Customer Information</h3>
+                            <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Customer Information</h3>
                                 
-                                <div className="space-y-6">
+                                <div className="space-y-4 sm:space-y-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Customer Name (Optional)
@@ -228,9 +268,9 @@ export default function CashierPage() {
                                             value={customerName}
                                             onChange={(e) => setCustomerName(e.target.value)}
                                             placeholder="Enter customer name or leave blank for walk-in customer"
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-lg text-black"
+                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base sm:text-lg text-black"
                                         />
-                                        <p className="text-sm text-gray-500 mt-1">
+                                        <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                             If left blank, will be recorded as "Walk-in Customer"
                                         </p>
                                     </div>
@@ -269,7 +309,7 @@ export default function CashierPage() {
                                                 {selectedTables.map((table) => (
                                                     <span
                                                         key={table.id}
-                                                        className="bg-orange-100 text-orange-800 px-3 py-2 rounded-lg font-medium"
+                                                        className="bg-orange-100 text-orange-800 px-2 sm:px-3 py-1 sm:py-2 rounded-lg font-medium text-sm"
                                                     >
                                                         {table.number}
                                                     </span>
@@ -292,7 +332,7 @@ export default function CashierPage() {
                     {/* Order Summary Sidebar */}
                     <div className="space-y-6">
                         {/* Order Summary */}
-                        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 sticky top-6">
+                        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200 sticky top-6">
                             <h3 className="text-lg font-bold text-gray-900 mb-4">Order Summary</h3>
                             
                             {/* Customer Info */}
@@ -300,7 +340,7 @@ export default function CashierPage() {
                                 <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                                     <div className="flex items-center gap-2 text-blue-800">
                                         <User className="w-4 h-4" />
-                                        <span className="font-medium">{customerName}</span>
+                                        <span className="font-medium text-sm">{customerName}</span>
                                     </div>
                                 </div>
                             )}
@@ -313,7 +353,7 @@ export default function CashierPage() {
                                         {selectedTables.map((table) => (
                                             <span
                                                 key={table.id}
-                                                className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm"
+                                                className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs sm:text-sm"
                                             >
                                                 {table.number}
                                             </span>
@@ -347,14 +387,14 @@ export default function CashierPage() {
                                     </div>
                                     
                                     <div className="border-t border-gray-200 mt-4 pt-4">
-                                        <div className="flex justify-between items-center text-lg font-bold">
+                                        <div className="flex justify-between items-center text-base sm:text-lg font-bold">
                                             <span className="text-black">Total:</span>
                                             <span className="text-orange-600">{formatCurrency(getTotalAmount())}</span>
                                         </div>
                                     </div>
                                 </>
                             ) : (
-                                <p className="text-gray-500 text-center py-4">No items added yet</p>
+                                <p className="text-gray-500 text-center py-4 text-sm">No items added yet</p>
                             )}
 
                             {/* Navigation Buttons */}
@@ -363,7 +403,7 @@ export default function CashierPage() {
                                     <button
                                         onClick={() => setCurrentStep('menu')}
                                         disabled={!canProceedToMenu}
-                                        className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     >
                                         Continue to Menu Selection
                                     </button>
@@ -373,14 +413,14 @@ export default function CashierPage() {
                                     <>
                                         <button
                                             onClick={() => setCurrentStep('tables')}
-                                            className="w-full bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2"
+                                            className="w-full bg-gray-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2 text-sm sm:text-base"
                                         >
                                             Back to Tables
                                         </button>
                                         <button
                                             onClick={() => setCurrentStep('customer')}
                                             disabled={!canProceedToCustomer}
-                                            className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Customer Info
                                         </button>
@@ -391,14 +431,14 @@ export default function CashierPage() {
                                     <>
                                         <button
                                             onClick={() => setCurrentStep('menu')}
-                                            className="w-full bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2"
+                                            className="w-full bg-gray-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2 text-sm sm:text-base"
                                         >
                                             Back to Menu
                                         </button>
                                         <button
                                             onClick={() => setCurrentStep('payment')}
                                             disabled={!canProceedToPayment}
-                                            className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Payment
                                         </button>
@@ -409,14 +449,14 @@ export default function CashierPage() {
                                     <>
                                         <button
                                             onClick={() => setCurrentStep('customer')}
-                                            className="w-full bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2"
+                                            className="w-full bg-gray-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors font-medium mb-2 text-sm sm:text-base"
                                         >
                                             Back to Customer
                                         </button>
                                         <button
                                             onClick={handleConfirmOrder}
                                             disabled={!canConfirmOrder}
-                                            className="w-full bg-green-500 text-white py-3 px-4 rounded-lg hover:bg-green-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full bg-green-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-green-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Confirm Order
                                         </button>
@@ -424,7 +464,6 @@ export default function CashierPage() {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
