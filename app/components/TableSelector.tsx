@@ -602,8 +602,8 @@ export default function RestaurantTableSelector({
                                         <text x="500" y="75" textAnchor="middle" className="text-xs font-medium fill-gray-600">RESTROOM</text>
 
                                         {/* Bar counter */}
-                                        <rect x="435" y="95" width="130" height="140" fill="#8b5cf6" stroke="#7c3aed" strokeWidth="1" opacity="0.3" />
-                                        <text x="500" y="170" textAnchor="middle" className="text-xs font-medium fill-purple-700">BAR COUNTER</text>
+                                        <rect x="435" y="95" width="130" height="140" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="1" />
+                                        <text x="500" y="170" textAnchor="middle" className="text-xs font-medium fill-gray-600">BAR COUNTER</text>
 
                                         {/* Semi-Outdoor section */}
                                         <rect x="580" y="40" width="310" height="200" fill="none" stroke="#94a3b8" strokeWidth="2" strokeDasharray="5,5" />
