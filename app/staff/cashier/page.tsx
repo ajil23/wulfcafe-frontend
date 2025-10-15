@@ -168,7 +168,7 @@ export default function CashierPage() {
                                             isCurrent
                                                 ? 'bg-orange-500 text-white scale-110'
                                                 : isCompleted
-                                                ? 'bg-green-500 text-white'
+                                                ? 'bg-orange-500 text-white'
                                                 : 'bg-gray-200 text-gray-600'
                                         }`}>
                                             {isCompleted ? (
@@ -189,7 +189,7 @@ export default function CashierPage() {
                                         </span>
                                         {index < 3 && (
                                             <div className={`w-4 md:w-6 lg:w-8 h-0.5 mx-1 md:mx-2 ${
-                                                index < stepIndex ? 'bg-green-500' : 'bg-gray-300'
+                                                index < stepIndex ? 'bg-orange-500' : 'bg-gray-300'
                                             }`} />
                                         )}
                                     </div>
