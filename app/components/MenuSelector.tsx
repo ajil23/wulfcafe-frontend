@@ -114,7 +114,7 @@ export default function MenuSelector({
                         placeholder="Search menu items..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-black"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-black"
                     />
                 </div>
             </div>
@@ -127,7 +127,7 @@ export default function MenuSelector({
                         onClick={() => setSelectedCategory(category)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                             selectedCategory === category
-                                ? 'bg-orange-500 text-white'
+                                ? 'bg-[#c17f54] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                     >
@@ -148,7 +148,7 @@ export default function MenuSelector({
                                     <h4 className="font-bold text-gray-900 text-lg">{item.name}</h4>
                                     <p className="text-sm text-gray-600 mb-2">{item.ingredients.join(', ')}</p>
                                     <div className="flex items-center justify-between">
-                                        <span className="font-semibold text-orange-600">
+                                        <span className="font-semibold text-[#c17f54]">
                                             {formatCurrency(item.price)}
                                         </span>
                                         <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
@@ -181,7 +181,7 @@ export default function MenuSelector({
                                 ) : (
                                     <button
                                         onClick={() => addToCart(item)}
-                                        className="flex-1 bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium"
+                                        className="flex-1 bg-[#c17f54] text-white py-2 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium"
                                     >
                                         Add to Order
                                     </button>
@@ -227,7 +227,7 @@ export default function MenuSelector({
                             </button>
                             <button
                                 onClick={confirmAddToCart}
-                                className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors font-medium"
+                                className="flex-1 px-4 py-2 bg-[#c17f54] text-white rounded-lg hover:bg-[#b57049] transition-colors font-medium"
                             >
                                 Add to Order
                             </button>

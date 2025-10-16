@@ -18,7 +18,7 @@ interface ReservationData {
         name: string;
         phone: string;
         number: string;
-        specialRequests: string;
+        notes: string;
     };
 }
 
@@ -34,7 +34,7 @@ export default function ReservationPage() {
             name: '',
             phone: '',
             number: '',
-            specialRequests: ''
+            notes: ''
         }
     });
 
@@ -137,7 +137,7 @@ export default function ReservationPage() {
             reservationId: `RES-${Date.now()}`,
             totalAmount: reservationData.cartItems.reduce((total, item) => total + (item.menuItem.price * item.quantity), 0)
         };
-        
+
         console.log('Reservation Data:', reservationPayload);
         alert(`Reservation submitted successfully!\nReservation ID: ${reservationPayload.reservationId}`);
     };
@@ -152,8 +152,8 @@ export default function ReservationPage() {
     const canProceedToTables = reservationData.date && reservationData.timeSlot;
     const canProceedToMenu = reservationData.selectedTables.length > 0;
     const canProceedToReview = reservationData.cartItems.length > 0;
-    const canConfirmReservation = reservationData.customerInfo.name.trim().length > 0 && 
-                                 reservationData.customerInfo.phone.trim().length > 0;
+    const canConfirmReservation = reservationData.customerInfo.name.trim().length > 0 &&
+        reservationData.customerInfo.phone.trim().length > 0;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -174,7 +174,7 @@ export default function ReservationPage() {
                             <p className="text-xs sm:text-sm text-gray-600">Book your table in advance</p>
                         </div>
                     </div>
-                    
+
                     {/* Progress Steps - Responsive */}
                     <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
                         {/* Mobile Progress Bar */}
@@ -189,10 +189,10 @@ export default function ReservationPage() {
                                 </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div 
-                                    className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                                    style={{ 
-                                        width: `${((stepIndex + 1) / 4) * 100}%` 
+                                <div
+                                    className="bg-[#c17f54] h-2 rounded-full transition-all duration-300"
+                                    style={{
+                                        width: `${((stepIndex + 1) / 4) * 100}%`
                                     }}
                                 />
                             </div>
@@ -208,36 +208,32 @@ export default function ReservationPage() {
                             ].map((step, index) => {
                                 const isCompleted = index < stepIndex;
                                 const isCurrent = currentStep === step.key;
-                                
+
                                 return (
                                     <div key={step.key} className="flex items-center gap-2">
-                                        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all ${
-                                            isCurrent
-                                                ? 'bg-orange-500 text-white scale-110'
+                                        <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all ${isCurrent
+                                                ? 'bg-[#c17f54] text-white scale-110'
                                                 : isCompleted
-                                                ? 'bg-orange-500 text-white'
-                                                : 'bg-gray-200 text-gray-600'
-                                        }`}>
+                                                    ? 'bg-[#c17f54] text-white'
+                                                    : 'bg-gray-200 text-gray-600'
+                                            }`}>
                                             {isCompleted ? (
                                                 <CheckCircle className="w-3 h-3 md:w-4 md:h-4" />
                                             ) : (
                                                 index + 1
                                             )}
                                         </div>
-                                        <span className={`text-xs md:text-sm font-medium hidden lg:block ${
-                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
-                                        }`}>
+                                        <span className={`text-xs md:text-sm font-medium hidden lg:block ${isCurrent ? 'text-[#b57049]' : 'text-gray-600'
+                                            }`}>
                                             {step.label}
                                         </span>
-                                        <span className={`text-xs md:text-sm font-medium lg:hidden ${
-                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
-                                        }`}>
+                                        <span className={`text-xs md:text-sm font-medium lg:hidden ${isCurrent ? 'text-[#b57049]' : 'text-gray-600'
+                                            }`}>
                                             {step.shortLabel}
                                         </span>
                                         {index < 3 && (
-                                            <div className={`w-4 md:w-6 lg:w-8 h-0.5 mx-1 md:mx-2 ${
-                                                index < stepIndex ? 'bg-orange-500' : 'bg-gray-300'
-                                            }`} />
+                                            <div className={`w-4 md:w-6 lg:w-8 h-0.5 mx-1 md:mx-2 ${index < stepIndex ? 'bg-[#c17f54]' : 'bg-gray-300'
+                                                }`} />
                                         )}
                                     </div>
                                 );
@@ -252,7 +248,7 @@ export default function ReservationPage() {
                     {/* Main Content */}
                     <div className="xl:col-span-2 space-y-6">
                         {currentStep === 'date' && (
-                            <DateSelector 
+                            <DateSelector
                                 onDateTimeSelect={handleDateSelect}
                                 selectedDate={reservationData.date}
                                 selectedTimeSlot={reservationData.timeSlot}
@@ -279,18 +275,18 @@ export default function ReservationPage() {
                         {currentStep === 'review' && (
                             <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
                                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 sm:mb-6">Review Reservation</h3>
-                                
+
                                 <div className="space-y-4 sm:space-y-6">
                                     {/* Date & Time */}
                                     <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-lg">
-                                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
+                                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-[#b57049]" />
                                         <div>
                                             <p className="font-semibold text-gray-900 text-sm sm:text-base">
-                                                {reservationData.date?.toLocaleDateString('en-US', { 
-                                                    weekday: 'long', 
-                                                    year: 'numeric', 
-                                                    month: 'long', 
-                                                    day: 'numeric' 
+                                                {reservationData.date?.toLocaleDateString('en-US', {
+                                                    weekday: 'long',
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric'
                                                 })}
                                             </p>
                                             <p className="text-gray-600 text-sm sm:text-base">{reservationData.timeSlot}</p>
@@ -300,8 +296,8 @@ export default function ReservationPage() {
                                     {/* Tables */}
                                     {reservationData.selectedTables.length > 0 && (
                                         <div className="flex items-center gap-4 p-4 bg-orange-50 rounded-lg">
-                                            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
-                                            <div>
+                                            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-[#b57049]" />
+                                            <div className="flex-1">
                                                 <p className="font-semibold text-gray-900 text-sm sm:text-base">Selected Tables</p>
                                                 <div className="flex flex-wrap gap-2 mt-2">
                                                     {reservationData.selectedTables.map(table => (
@@ -310,6 +306,9 @@ export default function ReservationPage() {
                                                         </span>
                                                     ))}
                                                 </div>
+                                                <div className="mt-2 text-sm text-gray-600">
+                                                    Total: {reservationData.selectedTables.reduce((sum, table) => sum + table.capacity, 0)} seats
+                                                </div>
                                             </div>
                                         </div>
                                     )}
@@ -317,7 +316,7 @@ export default function ReservationPage() {
                                     {/* Menu Items */}
                                     {reservationData.cartItems.length > 0 && (
                                         <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-lg">
-                                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 mt-1" />
+                                            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#b57049] mt-1" />
                                             <div className="flex-1">
                                                 <p className="font-semibold text-gray-900 text-sm sm:text-base mb-2">Selected Menu Items</p>
                                                 <div className="space-y-2">
@@ -331,7 +330,7 @@ export default function ReservationPage() {
                                                 <div className="border-t border-orange-200 mt-3 pt-3">
                                                     <div className="flex justify-between font-bold text-sm sm:text-base">
                                                         <span className="text-gray-900">Subtotal:</span>
-                                                        <span className="text-orange-600">{formatCurrency(getTotalAmount())}</span>
+                                                        <span className="text-[#b57049]">{formatCurrency(getTotalAmount())}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -351,7 +350,7 @@ export default function ReservationPage() {
                                                     value={reservationData.customerInfo.name}
                                                     onChange={(e) => handleCustomerInfoUpdate('name', e.target.value)}
                                                     placeholder="Enter your full name"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base text-black"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-sm sm:text-base text-black"
                                                 />
                                             </div>
                                             <div>
@@ -363,19 +362,19 @@ export default function ReservationPage() {
                                                     value={reservationData.customerInfo.phone}
                                                     onChange={(e) => handleCustomerInfoUpdate('phone', e.target.value)}
                                                     placeholder="Enter your phone number"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base text-black"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-sm sm:text-base text-black"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                                                    Phone
+                                                    Person *
                                                 </label>
                                                 <input
                                                     type="text"
                                                     value={reservationData.customerInfo.number}
                                                     onChange={(e) => handleCustomerInfoUpdate('number', e.target.value)}
-                                                    placeholder="Enter your whatsapp number"
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base text-black"
+                                                    placeholder="Enter the number of people attending"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-sm sm:text-base text-black"
                                                 />
                                             </div>
                                             <div className="md:col-span-2">
@@ -383,11 +382,11 @@ export default function ReservationPage() {
                                                     Special Requests
                                                 </label>
                                                 <textarea
-                                                    value={reservationData.customerInfo.specialRequests}
-                                                    onChange={(e) => handleCustomerInfoUpdate('specialRequests', e.target.value)}
+                                                    value={reservationData.customerInfo.notes}
+                                                    onChange={(e) => handleCustomerInfoUpdate('notes', e.target.value)}
                                                     placeholder="Any special requests or dietary restrictions"
                                                     rows={3}
-                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm sm:text-base text-black"
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-sm sm:text-base text-black"
                                                 />
                                             </div>
                                         </div>
@@ -402,7 +401,7 @@ export default function ReservationPage() {
                         {/* Summary Card */}
                         <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200 sticky top-6">
                             <h3 className="text-lg font-bold text-gray-900 mb-4">Reservation Summary</h3>
-                            
+
                             {reservationData.date ? (
                                 <div className="space-y-3">
                                     <div className="flex justify-between text-sm">
@@ -415,7 +414,7 @@ export default function ReservationPage() {
                                         <span className="text-gray-600">Time:</span>
                                         <span className="font-medium text-gray-900">{reservationData.timeSlot}</span>
                                     </div>
-                                    
+
                                     {reservationData.selectedTables.length > 0 && (
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-600">Tables:</span>
@@ -425,12 +424,21 @@ export default function ReservationPage() {
                                         </div>
                                     )}
 
+                                    {reservationData.selectedTables.length > 0 && (
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-600">Seats:</span>
+                                            <span className="font-medium text-gray-900">
+                                                {reservationData.selectedTables.reduce((sum, table) => sum + table.capacity, 0)} seats
+                                            </span>
+                                        </div>
+                                    )}
+
                                     {reservationData.cartItems.length > 0 && (
                                         <>
                                             <div className="border-t border-gray-200 pt-3">
                                                 <div className="flex justify-between font-semibold">
                                                     <span className="text-black">Total:</span>
-                                                    <span className="text-orange-600">
+                                                    <span className="text-[#b57049]">
                                                         {formatCurrency(getTotalAmount())}
                                                     </span>
                                                 </div>
@@ -448,7 +456,7 @@ export default function ReservationPage() {
                                     <button
                                         onClick={() => setCurrentStep('tables')}
                                         disabled={!canProceedToTables}
-                                        className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                        className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     >
                                         Continue to Table Selection
                                     </button>
@@ -465,7 +473,7 @@ export default function ReservationPage() {
                                         <button
                                             onClick={() => setCurrentStep('menu')}
                                             disabled={!canProceedToMenu}
-                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Menu Selection
                                         </button>
@@ -483,7 +491,7 @@ export default function ReservationPage() {
                                         <button
                                             onClick={() => setCurrentStep('review')}
                                             disabled={!canProceedToReview}
-                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Review
                                         </button>
@@ -501,7 +509,7 @@ export default function ReservationPage() {
                                         <button
                                             onClick={handleReservationSubmit}
                                             disabled={!canConfirmReservation}
-                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Confirm Reservation
                                         </button>

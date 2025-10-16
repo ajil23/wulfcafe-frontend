@@ -143,7 +143,7 @@ export default function CashierPage() {
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div 
-                                    className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                    className="bg-[#c17f54] h-2 rounded-full transition-all duration-300"
                                     style={{ 
                                         width: `${((stepIndex + 1) / 4) * 100}%` 
                                     }}
@@ -166,9 +166,9 @@ export default function CashierPage() {
                                     <div key={step.key} className="flex items-center gap-2">
                                         <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm font-medium transition-all ${
                                             isCurrent
-                                                ? 'bg-orange-500 text-white scale-110'
+                                                ? 'bg-[#c17f54] text-white scale-110'
                                                 : isCompleted
-                                                ? 'bg-orange-500 text-white'
+                                                ? 'bg-[#c17f54] text-white'
                                                 : 'bg-gray-200 text-gray-600'
                                         }`}>
                                             {isCompleted ? (
@@ -178,18 +178,18 @@ export default function CashierPage() {
                                             )}
                                         </div>
                                         <span className={`text-xs md:text-sm font-medium hidden lg:block ${
-                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
+                                            isCurrent ? 'text-[#b57049]' : 'text-gray-600'
                                         }`}>
                                             {step.label}
                                         </span>
                                         <span className={`text-xs md:text-sm font-medium lg:hidden ${
-                                            isCurrent ? 'text-orange-600' : 'text-gray-600'
+                                            isCurrent ? 'text-[#b57049]' : 'text-gray-600'
                                         }`}>
                                             {step.shortLabel}
                                         </span>
                                         {index < 3 && (
                                             <div className={`w-4 md:w-6 lg:w-8 h-0.5 mx-1 md:mx-2 ${
-                                                index < stepIndex ? 'bg-orange-500' : 'bg-gray-300'
+                                                index < stepIndex ? 'bg-[#c17f54]' : 'bg-gray-300'
                                             }`} />
                                         )}
                                     </div>
@@ -235,7 +235,7 @@ export default function CashierPage() {
                                             value={customerName}
                                             onChange={(e) => setCustomerName(e.target.value)}
                                             placeholder="Enter customer name or leave blank for walk-in customer"
-                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-base sm:text-lg text-black"
+                                            className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-base sm:text-lg text-black"
                                         />
                                         <p className="text-xs sm:text-sm text-gray-500 mt-1">
                                             If left blank, will be recorded as "Walk-in Customer"
@@ -262,7 +262,7 @@ export default function CashierPage() {
                                             <div className="border-t border-gray-200 mt-3 pt-3">
                                                 <div className="flex justify-between items-center font-bold">
                                                     <span className="text-black">Total:</span>
-                                                    <span className="text-orange-600">{formatCurrency(getTotalAmount())}</span>
+                                                    <span className="text-[#c17f54]">{formatCurrency(getTotalAmount())}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -356,7 +356,7 @@ export default function CashierPage() {
                                     <div className="border-t border-gray-200 mt-4 pt-4">
                                         <div className="flex justify-between items-center text-base sm:text-lg font-bold">
                                             <span className="text-black">Total:</span>
-                                            <span className="text-orange-600">{formatCurrency(getTotalAmount())}</span>
+                                            <span className="text-[#c17f54]">{formatCurrency(getTotalAmount())}</span>
                                         </div>
                                     </div>
                                 </>
@@ -370,7 +370,7 @@ export default function CashierPage() {
                                     <button
                                         onClick={() => setCurrentStep('menu')}
                                         disabled={!canProceedToMenu}
-                                        className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                        className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     >
                                         Continue to Menu Selection
                                     </button>
@@ -387,7 +387,7 @@ export default function CashierPage() {
                                         <button
                                             onClick={() => setCurrentStep('customer')}
                                             disabled={!canProceedToCustomer}
-                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Customer Info
                                         </button>
@@ -405,7 +405,7 @@ export default function CashierPage() {
                                         <button
                                             onClick={() => setCurrentStep('payment')}
                                             disabled={!canProceedToPayment}
-                                            className="w-full bg-orange-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-orange-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Continue to Payment
                                         </button>
@@ -423,7 +423,7 @@ export default function CashierPage() {
                                         <button
                                             onClick={handleConfirmOrder}
                                             disabled={!canConfirmOrder}
-                                            className="w-full bg-green-500 text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-green-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+                                            className="w-full bg-[#c17f54] text-white py-2 sm:py-3 px-4 rounded-lg hover:bg-[#b57049] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                         >
                                             Confirm Order
                                         </button>
