@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { Users, Clock, DollarSign, Sparkles, Grid3x3, CheckCircle, XCircle, Calendar, Wrench, X, ChefHat, Utensils, CheckCheck, RotateCcw, ArrowLeft } from 'lucide-react';
+import { Users, Clock, DollarSign, Sparkles, Grid3x3, CheckCircle, XCircle, Calendar, Wrench, X, ChefHat, Utensils, CheckCheck, RotateCcw, ArrowLeft, UserCheck, UserX, MapPin, Phone, User } from 'lucide-react';
 import Image from 'next/image';
 
 interface OrderItem {
@@ -14,13 +14,16 @@ interface OrderItem {
 interface Order {
     id: string;
     tableNumber: string;
-    status: 'pending' | 'preparing' | 'completed' | 'ready' | 'served' | 'canceled';
+    status: 'pending' | 'preparing' | 'completed' | 'ready' | 'served' | 'canceled' | 'reservation';
     customerName: string;
     seats: number;
     orderTime: string;
     duration?: string;
     totalAmount: number;
     items: OrderItem[];
+    reservationTime?: string;
+    reservationDate?: string;
+    phone?: string;
 }
 
 const sampleOrders: Order[] = [
@@ -69,64 +72,62 @@ const sampleOrders: Order[] = [
         ]
     },
     {
-        id: 'WLF-2024-003',
-        tableNumber: 'Table 4',
-        status: 'ready',
+        id: 'RES-2024-001',
+        tableNumber: 'Table 2',
+        status: 'reservation',
         customerName: 'Sari Dewi',
         seats: 4,
-        orderTime: new Date(Date.now() - 25 * 60000).toISOString(),
-        duration: '25m',
+        orderTime: new Date().toISOString(),
         totalAmount: 45000,
+        reservationTime: '19:00',
+        reservationDate: new Date().toISOString().split('T')[0],
+        phone: '+6281234567890',
         items: [
             {
                 id: 4,
-                name: 'Ayam Geprek',
-                quantity: 1,
-                price: 18000,
-                status: 'ready'
+                name: 'Nasi Goreng Spesial',
+                quantity: 2,
+                price: 15000,
+                status: 'pending'
             },
             {
                 id: 5,
-                name: 'Jus Alpukat',
-                quantity: 1,
-                price: 15000,
-                status: 'ready'
-            },
-            {
-                id: 6,
-                name: 'Kerupuk',
+                name: 'Es Teh Manis',
                 quantity: 2,
-                price: 6000,
-                status: 'ready'
+                price: 8000,
+                status: 'pending'
             }
         ]
     },
     {
-        id: 'WLF-2024-004',
-        tableNumber: 'Table 6',
-        status: 'completed',
-        customerName: 'Tim Corporate',
+        id: 'RES-2024-002',
+        tableNumber: 'Table 5',
+        status: 'reservation',
+        customerName: 'Rina Wijaya',
         seats: 2,
-        orderTime: new Date(Date.now() - 45 * 60000).toISOString(),
-        duration: '35m',
-        totalAmount: 120000,
+        orderTime: new Date().toISOString(),
+        totalAmount: 32000,
+        reservationTime: '20:30',
+        reservationDate: new Date().toISOString().split('T')[0],
+        phone: '+6289876543210',
         items: [
             {
-                id: 7,
-                name: 'Steak Sirloin',
+                id: 6,
+                name: 'Mie Ayam Bakso',
                 quantity: 2,
-                price: 60000,
-                status: 'served'
+                price: 16000,
+                status: 'pending'
             }
         ]
     },
 ];
 
 export default function OrderPage() {
-    const [orders] = useState<Order[]>(sampleOrders);
-    const [filter, setFilter] = useState<'all' | 'pending' | 'preparing' | 'ready' | 'completed' | 'served' | 'canceled'>('all');
+    const [orders, setOrders] = useState<Order[]>(sampleOrders);
+    const [filter, setFilter] = useState<'all' | 'pending' | 'preparing' | 'ready' | 'completed' | 'served' | 'canceled' | 'reservation'>('all');
     const [username] = useState('satria');
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+    const [actualPersons, setActualPersons] = useState<number>(0);
 
     const filteredOrders = orders.filter(order =>
         filter === 'all' || order.status === filter
@@ -150,6 +151,8 @@ export default function OrderPage() {
                 return 'bg-purple-100 text-purple-800 border-purple-300';
             case 'canceled':
                 return 'bg-red-100 text-red-800 border-red-300';
+            case 'reservation':
+                return 'bg-orange-100 text-orange-800 border-orange-300';
             default:
                 return '';
         }
@@ -169,6 +172,8 @@ export default function OrderPage() {
                 return 'bg-purple-500';
             case 'canceled':
                 return 'bg-red-500';
+            case 'reservation':
+                return 'bg-orange-500';
             default:
                 return '';
         }
@@ -188,6 +193,8 @@ export default function OrderPage() {
                 return Utensils;
             case 'canceled':
                 return XCircle;
+            case 'reservation':
+                return Calendar;
             default:
                 return Clock;
         }
@@ -207,6 +214,8 @@ export default function OrderPage() {
                 return 'Served';
             case 'canceled':
                 return 'Canceled';
+            case 'reservation':
+                return 'Reservation';
             default:
                 return '';
         }
@@ -237,6 +246,30 @@ export default function OrderPage() {
             minute: '2-digit',
             hour12: false
         });
+    };
+
+    const handleConfirmReservation = (orderId: string, actualPersons: number) => {
+        setOrders(prev => prev.map(order =>
+            order.id === orderId
+                ? { ...order, status: 'preparing' as const, seats: actualPersons }
+                : order
+        ));
+        setSelectedOrder(null);
+        setActualPersons(0);
+        alert(`Reservation ${orderId} confirmed with ${actualPersons} persons!`);
+    };
+
+    const handleCancelReservation = (orderId: string) => {
+        if (confirm('Are you sure you want to cancel this reservation?')) {
+            setOrders(prev => prev.map(order =>
+                order.id === orderId
+                    ? { ...order, status: 'canceled' as const }
+                    : order
+            ));
+            setSelectedOrder(null);
+            setActualPersons(0);
+            alert(`Reservation ${orderId} canceled!`);
+        }
     };
 
     return (
@@ -278,7 +311,7 @@ export default function OrderPage() {
                             {orders.length}
                         </span>
                     </button>
-                    {['pending', 'preparing', 'ready', 'completed', 'served', 'canceled'].map((status) => {
+                    {['pending', 'preparing', 'ready', 'completed', 'served', 'reservation', 'canceled'].map((status) => {
                         const StatusIcon = getStatusIcon(status as Order['status']);
                         return (
                             <button
@@ -306,10 +339,13 @@ export default function OrderPage() {
                     {filteredOrders.map((order) => {
                         const StatusIcon = getStatusIcon(order.status);
                         return (
-                            <button
+                            <div
                                 key={order.id}
-                                onClick={() => setSelectedOrder(order)}
-                                className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 hover:shadow-md transition-all hover:scale-105 text-left w-full"
+                                onClick={() => {
+                                    setSelectedOrder(order);
+                                    setActualPersons(order.seats);
+                                }}
+                                className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 hover:shadow-md transition-all hover:scale-105 cursor-pointer text-left w-full"
                             >
                                 {/* Order Header */}
                                 <div className="flex items-start justify-between mb-4">
@@ -325,7 +361,7 @@ export default function OrderPage() {
                                     </div>
                                 </div>
 
-                                {/* Order Info */}
+                                {/* Order Info - SAMA untuk semua */}
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2 text-sm text-gray-600">
                                         <Users className="w-4 h-4" />
@@ -339,16 +375,34 @@ export default function OrderPage() {
                                         </div>
                                     )}
 
-                                    <div className="flex items-center gap-2 text-sm font-semibold text-orange-700">
-                                        <DollarSign className="w-4 h-4" />
-                                        <span>Rp {order.totalAmount.toLocaleString('id-ID')}</span>
-                                    </div>
+                                    {order.totalAmount > 0 && (
+                                        <div className="flex items-center gap-2 text-sm font-semibold text-orange-700">
+                                            <DollarSign className="w-4 h-4" />
+                                            <span>Rp {order.totalAmount.toLocaleString('id-ID')}</span>
+                                        </div>
+                                    )}
 
                                     <div className="text-xs text-gray-500">
-                                        {order.items.length} items • Ordered at {formatTime(order.orderTime)}
+                                        {order.items.length} items • {order.status === 'reservation' ? 'Reserved' : 'Ordered'} at {formatTime(order.orderTime)}
                                     </div>
+
+                                    {/* Tombol Confirm untuk Reservation */}
+                                   {order.status === 'reservation' && (
+    <div className="flex gap-2 pt-2">
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                handleConfirmReservation(order.id, order.seats);
+            }}
+            className="flex-1 bg-orange-500 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-orange-600 transition-colors flex items-center justify-center gap-1"
+        >
+            <UserCheck className="w-3 h-3" />
+            Confirm
+        </button>
+    </div>
+)}
                                 </div>
-                            </button>
+                            </div>
                         );
                     })}
                 </div>
@@ -363,11 +417,14 @@ export default function OrderPage() {
                 )}
             </div>
 
-            {/* Modal Detail */}
+            {/* Modal Detail - SAMA untuk semua */}
             {selectedOrder && (
                 <div
                     className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-                    onClick={() => setSelectedOrder(null)}
+                    onClick={() => {
+                        setSelectedOrder(null);
+                        setActualPersons(0);
+                    }}
                 >
                     <div
                         className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl"
@@ -382,7 +439,10 @@ export default function OrderPage() {
                                 </span>
                             </div>
                             <button
-                                onClick={() => setSelectedOrder(null)}
+                                onClick={() => {
+                                    setSelectedOrder(null);
+                                    setActualPersons(0);
+                                }}
                                 className="p-2 hover:bg-orange-100 rounded-lg transition-colors text-gray-500 hover:text-gray-700"
                             >
                                 <X className="w-5 h-5" />
@@ -396,7 +456,7 @@ export default function OrderPage() {
                                 <h3 className="font-semibold text-gray-900 text-lg">Order Information</h3>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div className="flex items-center gap-2 text-gray-700">
-                                        <Users className="w-5 h-5 text-gray-500" />
+                                        <User className="w-5 h-5 text-gray-500" />
                                         <div>
                                             <div className="font-medium">Customer</div>
                                             <div>{selectedOrder.customerName}</div>
@@ -405,8 +465,15 @@ export default function OrderPage() {
                                     <div className="flex items-center gap-2 text-gray-700">
                                         <Calendar className="w-5 h-5 text-gray-500" />
                                         <div>
-                                            <div className="font-medium">Order Time</div>
-                                            <div>{formatTime(selectedOrder.orderTime)}</div>
+                                            <div className="font-medium">
+                                                {selectedOrder.status === 'reservation' ? 'Reservation Time' : 'Order Time'}
+                                            </div>
+                                            <div>
+                                                {selectedOrder.status === 'reservation'
+                                                    ? `${selectedOrder.reservationDate} • ${selectedOrder.reservationTime}`
+                                                    : formatTime(selectedOrder.orderTime)
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2 text-gray-700">
@@ -416,7 +483,16 @@ export default function OrderPage() {
                                             <div>{selectedOrder.seats} people</div>
                                         </div>
                                     </div>
-                                    {selectedOrder.duration && (
+                                    {selectedOrder.phone && (
+                                        <div className="flex items-center gap-2 text-gray-700">
+                                            <Phone className="w-5 h-5 text-gray-500" />
+                                            <div>
+                                                <div className="font-medium">Phone</div>
+                                                <div>{selectedOrder.phone}</div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    {selectedOrder.duration && selectedOrder.status !== 'reservation' && (
                                         <div className="flex items-center gap-2 text-gray-700">
                                             <Clock className="w-5 h-5 text-gray-500" />
                                             <div>
@@ -428,56 +504,80 @@ export default function OrderPage() {
                                 </div>
                             </div>
 
-                            {/* Order Items */}
-                            <div className="space-y-3">
-                                <h3 className="font-semibold text-gray-900 text-lg">Order Items</h3>
+                            {/* Order Items - TAMPIL untuk SEMUA */}
+                            {selectedOrder.items.length > 0 && (
                                 <div className="space-y-3">
-                                    {selectedOrder.items.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                            <div className="flex-1">
-                                                <div className="font-medium text-gray-900">{item.name}</div>
-                                                <div className="text-sm text-gray-600">
-                                                    {item.quantity} x Rp {item.price.toLocaleString('id-ID')}
+                                    <h3 className="font-semibold text-gray-900 text-lg">Order Items</h3>
+                                    <div className="space-y-3">
+                                        {selectedOrder.items.map((item) => (
+                                            <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                <div className="flex-1">
+                                                    <div className="font-medium text-gray-900">{item.name}</div>
+                                                    <div className="text-sm text-gray-600">
+                                                        {item.quantity} x Rp {item.price.toLocaleString('id-ID')}
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getItemStatusColor(item.status)}`}>
+                                                        {getStatusLabel(item.status)}
+                                                    </span>
+                                                    <div className="text-sm font-semibold text-gray-900">
+                                                        Rp {(item.quantity * item.price).toLocaleString('id-ID')}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-3">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getItemStatusColor(item.status)}`}>
-                                                    {getStatusLabel(item.status)}
-                                                </span>
-                                                <div className="text-sm font-semibold text-gray-900">
-                                                    Rp {(item.quantity * item.price).toLocaleString('id-ID')}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Order Summary */}
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <div className="flex justify-between items-center text-lg font-bold text-gray-900">
-                                    <span>Total Amount:</span>
-                                    <span className="text-orange-700">Rp {selectedOrder.totalAmount.toLocaleString('id-ID')}</span>
+                            {/* Order Summary - TAMPIL untuk SEMUA */}
+                            {selectedOrder.totalAmount > 0 && (
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <div className="flex justify-between items-center text-lg font-bold text-gray-900">
+                                        <span>Total Amount:</span>
+                                        <span className="text-orange-700">Rp {selectedOrder.totalAmount.toLocaleString('id-ID')}</span>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Status Info */}
-                            <div className="bg-gray-50 rounded-lg p-4">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-4 h-4 rounded-full ${getStatusDotColor(selectedOrder.status)}`}></div>
-                                    <div>
-                                        <p className="font-semibold text-gray-900">Current Order Status</p>
-                                        <p className="text-sm text-gray-600">
-                                            {selectedOrder.status === 'pending' && 'Order is waiting for confirmation'}
-                                            {selectedOrder.status === 'preparing' && 'Order is being prepared in the kitchen'}
-                                            {selectedOrder.status === 'ready' && 'Order is ready for serving'}
-                                            {selectedOrder.status === 'completed' && 'Order preparation is completed'}
-                                            {selectedOrder.status === 'served' && 'Order has been served to customer'}
-                                            {selectedOrder.status === 'canceled' && 'Order has been canceled'}
+                            {/* Input Actual Persons - Hanya untuk reservation */}
+                            {selectedOrder.status === 'reservation' && (
+                                <div className="space-y-3">
+                                    <h3 className="font-semibold text-gray-900 text-lg">Confirm Arrival</h3>
+                                    <div className="space-y-2">
+                                        <label className="block text-sm font-medium text-gray-700">
+                                            Actual Number of Persons
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="20"
+                                            value={actualPersons}
+                                            onChange={(e) => setActualPersons(Number(e.target.value))}
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-black"
+                                            placeholder="Enter actual number of persons"
+                                        />
+                                        <p className="text-xs text-gray-500">
+                                            Reserved for {selectedOrder.seats} people
                                         </p>
                                     </div>
                                 </div>
-                            </div>
+                            )}
+
+                            {/* Action Buttons untuk Reservation */}
+                            {selectedOrder.status === 'reservation' && (
+                                <div className="flex gap-3 pt-4">
+                                    <button
+                                        onClick={() => handleConfirmReservation(selectedOrder.id, actualPersons)}
+                                        disabled={actualPersons < 1}
+                                        className="flex-1 bg-orange-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    >
+                                        <UserCheck className="w-5 h-5" />
+                                        Confirm
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
