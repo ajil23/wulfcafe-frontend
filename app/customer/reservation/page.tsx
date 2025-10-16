@@ -379,7 +379,7 @@ export default function ReservationPage() {
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-                                                    Special Requests
+                                                    Notes
                                                 </label>
                                                 <textarea
                                                     value={reservationData.customerInfo.notes}
