@@ -57,8 +57,8 @@ export default function PaymentMethod({ selectedMethod, onMethodSelect }: Paymen
                             onClick={() => onMethodSelect(method.id)}
                             className={`p-4 border-2 rounded-xl text-left transition-all ${
                                 isSelected
-                                    ? 'border-orange-500 bg-orange-50'
-                                    : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-25'
+                                    ? 'border-[#c17f54] bg-orange-50'
+                                    : 'border-gray-200 bg-white hover:border-[#c17f54] hover:bg-orange-25'
                             }`}
                         >
                             <div className="flex items-center gap-3 mb-2">
@@ -66,17 +66,17 @@ export default function PaymentMethod({ selectedMethod, onMethodSelect }: Paymen
                                     isSelected ? 'bg-orange-100' : 'bg-gray-100'
                                 }`}>
                                     <IconComponent className={`w-5 h-5 ${
-                                        isSelected ? 'text-orange-600' : 'text-gray-600'
+                                        isSelected ? 'text-[#c17f54]' : 'text-gray-600'
                                     }`} />
                                 </div>
                                 <span className={`font-bold ${
-                                    isSelected ? 'text-orange-900' : 'text-gray-900'
+                                    isSelected ? 'text-[#c17f54]' : 'text-gray-900'
                                 }`}>
                                     {method.name}
                                 </span>
                             </div>
                             <p className={`text-sm ${
-                                isSelected ? 'text-orange-700' : 'text-gray-600'
+                                isSelected ? 'text-[#c17f54]' : 'text-gray-600'
                             }`}>
                                 {method.description}
                             </p>

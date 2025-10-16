@@ -430,7 +430,7 @@ export default function RestaurantTableSelector({
                                 <button
                                     onClick={() => setViewMode('grid')}
                                     className={`px-3 md:px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'grid'
-                                        ? 'bg-white text-orange-600 shadow-sm'
+                                        ? 'bg-white text-[#c17f54] shadow-sm'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
@@ -439,7 +439,7 @@ export default function RestaurantTableSelector({
                                 <button
                                     onClick={() => setViewMode('map')}
                                     className={`px-3 md:px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'map'
-                                        ? 'bg-white text-orange-600 shadow-sm'
+                                        ? 'bg-white text-[#c17f54] shadow-sm'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
@@ -463,20 +463,20 @@ export default function RestaurantTableSelector({
 
                     {/* Selected Tables Preview */}
                     {selectedTables.length > 0 && (
-                        <div className="mb-6 p-4 bg-orange-50 rounded-xl border border-orange-200">
+                        <div className="mb-6 p-4 bg-orange-50 rounded-xl border border-[#c17f54]">
                             <h4 className="text-sm font-medium text-orange-800 mb-3">Selected Tables:</h4>
                             <div className="flex flex-wrap gap-2">
                                 {selectedTables.map((table) => (
                                     <div
                                         key={table.id}
-                                        className="flex items-center gap-2 bg-orange-500 text-white px-3 py-2 rounded-lg text-sm"
+                                        className="flex items-center gap-2 bg-[#c17f54] text-white px-3 py-2 rounded-lg text-sm"
                                     >
                                         <Table className="w-3 h-3 md:w-4 md:h-4" />
                                         <span className="font-medium">{table.number}</span>
                                         <span className="text-orange-100 text-xs">({table.capacity} seats)</span>
                                         <button
                                             onClick={() => handleTableClick(table)}
-                                            className="text-orange-200 hover:text-white ml-1"
+                                            className="text-[#c17f54] hover:text-white ml-1"
                                         >
                                             <X className="w-3 h-3 md:w-4 md:h-4" />
                                         </button>

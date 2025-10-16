@@ -59,7 +59,7 @@ export default function DateSelector({ onDateTimeSelect, selectedDate, selectedT
                     value={currentSelectedDate.toISOString().split('T')[0]}
                     onChange={(e) => handleDateChange(new Date(e.target.value))}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-black"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-black"
                 />
             </div>
 
@@ -76,8 +76,8 @@ export default function DateSelector({ onDateTimeSelect, selectedDate, selectedT
                             onClick={() => handleTimeChange(time)}
                             className={`p-3 rounded-lg border-2 text-sm font-medium transition-all ${
                                 currentSelectedTime === time
-                                    ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                    : 'border-gray-200 bg-white text-gray-700 hover:border-orange-300'
+                                    ? 'border-[#c17f54] bg-orange-50 text-[#b57049]'
+                                    : 'border-gray-200 bg-white text-gray-700 hover:border-[#c17f54]'
                             }`}
                         >
                             {time}
@@ -87,7 +87,7 @@ export default function DateSelector({ onDateTimeSelect, selectedDate, selectedT
             </div>
 
             {/* Selected Date & Time Display */}
-            <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+            <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-[#c17f54]">
                 <p className="text-sm font-medium text-orange-800">
                     Selected: {currentSelectedDate.toLocaleDateString('en-US', { 
                         weekday: 'long', 
