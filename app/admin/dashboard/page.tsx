@@ -1,14 +1,13 @@
-// app/admin/dashboard/page.tsx
 'use client';
 
 import { useState } from 'react';
 import {
     Users, UserPlus, Edit, Trash2, Eye, Search, Filter, Clock, Calendar,
     Mail, Phone, MapPin, MoreVertical, ArrowLeft, Table, Utensils,
-    Package, CreditCard, BookOpen, Plus, BarChart3, X
+    Package, CreditCard, BookOpen, Plus, BarChart3, X, Activity,
+    Settings, TrendingUp, Database
 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface Staff {
     id: string;
@@ -211,7 +210,6 @@ const sampleTables: RestaurantTable[] = [
     }
 ];
 
-// Sample data dengan lebih banyak kategori
 const sampleMenu: MenuItem[] = [
     {
         id: 'MENU-001',
@@ -424,24 +422,51 @@ const sampleStockTransactions: StockTransaction[] = [
     }
 ];
 
-// Initial categories dari sample menu
 const initialCategories = ['all', 'Main Course', 'Beverage', 'Dessert', 'Appetizer'];
 
+type TabType = 'sessions' | 'tables' | 'reservations' | 'transactions' | 'stock-transactions' | 'staff' | 'menu' | 'stock';
+type CategoryType = 'realtime' | 'master';
+
 export default function AdminDashboard() {
-    const [activeTab, setActiveTab] = useState<'staff' | 'sessions' | 'tables' | 'menu' | 'stock' | 'transactions' | 'reservations' | 'stock-transactions'>('staff');
+    const [activeCategory, setActiveCategory] = useState<CategoryType>('realtime');
+    const [activeTab, setActiveTab] = useState<TabType>('sessions');
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [newItem, setNewItem] = useState({});
     
-    // State untuk menu management
     const [selectedCategory, setSelectedCategory] = useState<'all' | string>('all');
     const [menuCategories, setMenuCategories] = useState<string[]>(initialCategories);
     const [newCategoryName, setNewCategoryName] = useState('');
     const [showCategoryManager, setShowCategoryManager] = useState(false);
 
-    // Filter data berdasarkan tab aktif dan search term
+    // Tab categories configuration
+    const tabCategories = {
+        realtime: {
+            label: 'Real-time Operations',
+            description: 'Live monitoring & frequent updates',
+            icon: Activity,
+            tabs: [
+                { key: 'transactions' as const, label: 'Payment Transactions', icon: CreditCard, description: 'Payment records' },
+                { key: 'stock-transactions' as const, label: 'Stock Transactions', icon: BarChart3, description: 'Inventory changes' },
+                { key: 'sessions' as const, label: 'Guest Sessions', icon: Clock, description: 'Active dining sessions' },
+            ]
+        },
+        master: {
+            label: 'Master Data',
+            description: 'Configuration & settings',
+            icon: Database,
+            tabs: [
+                { key: 'stock' as const, label: 'Inventory', icon: Package, description: 'Stock levels & supplies' },
+                { key: 'reservations' as const, label: 'Reservations', icon: BookOpen, description: 'Upcoming bookings' },
+                { key: 'tables' as const, label: 'Table Management', icon: Table, description: 'Real-time table availability' },
+                { key: 'menu' as const, label: 'Menu Management', icon: Utensils, description: 'Food & beverage catalog' },
+                { key: 'staff' as const, label: 'Staff Management', icon: Users, description: 'Employee records' },
+            ]
+        }
+    };
+
     const getFilteredData = () => {
         const term = searchTerm.toLowerCase();
         switch (activeTab) {
@@ -524,7 +549,6 @@ export default function AdminDashboard() {
         setShowEditModal(true);
     };
 
-    // Category management functions
     const handleAddCategory = () => {
         if (newCategoryName.trim() && !menuCategories.includes(newCategoryName.trim())) {
             setMenuCategories([...menuCategories, newCategoryName.trim()]);
@@ -569,33 +593,28 @@ export default function AdminDashboard() {
 
     const getStatusColor = (status: string, type: string = 'default') => {
         const colors: any = {
-            // Staff & General
             active: 'bg-green-100 text-green-800',
             inactive: 'bg-gray-100 text-gray-800',
-            // Table Status
             available: 'bg-green-100 text-green-800',
             occupied: 'bg-red-100 text-red-800',
             reserved: 'bg-yellow-100 text-yellow-800',
             maintenance: 'bg-gray-100 text-gray-800',
-            // Menu Status
             'out-of-stock': 'bg-red-100 text-red-800',
-            // Stock Status
             adequate: 'bg-green-100 text-green-800',
             low: 'bg-yellow-100 text-yellow-800',
             out_of_stock: 'bg-red-100 text-red-800',
-            // Transaction Status
             completed: 'bg-green-100 text-green-800',
             pending: 'bg-yellow-100 text-yellow-800',
             failed: 'bg-red-100 text-red-800',
-            // Reservation Status
             confirmed: 'bg-green-100 text-green-800',
             cancelled: 'bg-red-100 text-red-800',
-            // Stock Transaction Reasons
             purchase: 'bg-blue-100 text-blue-800',
             usage: 'bg-orange-100 text-orange-800',
             adjustment: 'bg-purple-100 text-purple-800',
             waste: 'bg-red-100 text-red-800',
-            transfer: 'bg-yellow-100 text-yellow-800'
+            transfer: 'bg-yellow-100 text-yellow-800',
+            in: 'bg-green-100 text-green-800',
+            out: 'bg-red-100 text-red-800'
         };
         return colors[status] || 'bg-gray-100 text-gray-800';
     };
@@ -611,10 +630,10 @@ export default function AdminDashboard() {
         }
     };
 
-    const showAddButton = ['staff', 'tables', 'menu', 'stock'].includes(activeTab);
+    const showAddButton = ['staff', 'menu', 'stock', 'tables'].includes(activeTab);
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
             {/* Header */}
             <div className="bg-white border-b border-gray-200 px-6 py-4 shadow-sm">
                 <div className="flex items-center justify-between">
@@ -641,93 +660,160 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="container mx-auto px-6 py-8">
+            <div className="max-w-7xl mx-auto px-6 py-8">
                 {/* Stats Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Total Staff</p>
-                                <p className="text-2xl font-bold text-gray-900">{sampleStaff.length}</p>
-                            </div>
-                            <div className="p-3 bg-blue-100 rounded-lg">
-                                <Users className="w-6 h-6 text-blue-600" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium text-gray-600">Active Tables</p>
+                                <p className="text-sm font-medium text-gray-600">Active Sessions</p>
                                 <p className="text-2xl font-bold text-gray-900">
-                                    {sampleTables.filter(t => t.status === 'occupied').length}
+                                    {sampleGuestSessions.filter(s => s.status === 'active').length}
                                 </p>
+                                <p className="text-xs text-gray-500 mt-1">Live now</p>
                             </div>
-                            <div className="p-3 bg-green-100 rounded-lg">
-                                <Table className="w-6 h-6 text-green-600" />
+                            <div className="p-3 bg-[#c17f54]/10 rounded-lg">
+                                <Activity className="w-6 h-6 text-[#c17f54]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600">Available Tables</p>
+                                <p className="text-2xl font-bold text-gray-900">
+                                    {sampleTables.filter(t => t.status === 'available').length}/{sampleTables.length}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">Ready to seat</p>
+                            </div>
+                            <div className="p-3 bg-[#c17f54]/10 rounded-lg">
+                                <Table className="w-6 h-6 text-[#c17f54]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium text-gray-600">Today's Revenue</p>
                                 <p className="text-2xl font-bold text-gray-900">
-                                    Rp {sampleTransactions.reduce((acc, t) => acc + t.amount, 0).toLocaleString('id-ID')}
+                                    Rp {(sampleTransactions.reduce((acc, t) => acc + t.amount, 0) / 1000).toFixed(0)}K
                                 </p>
+                                <p className="text-xs text-green-600 mt-1">+12% from yesterday</p>
                             </div>
-                            <div className="p-3 bg-orange-100 rounded-lg">
-                                <CreditCard className="w-6 h-6 text-orange-600" />
+                            <div className="p-3 bg-[#c17f54]/10 rounded-lg">
+                                <TrendingUp className="w-6 h-6 text-[#c17f54]" />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-medium text-gray-600">Low Stock Items</p>
+                                <p className="text-sm font-medium text-gray-600">Low Stock Alert</p>
                                 <p className="text-2xl font-bold text-gray-900">
                                     {sampleStock.filter(s => s.status === 'low' || s.status === 'out-of-stock').length}
                                 </p>
+                                <p className="text-xs text-red-600 mt-1">Needs attention</p>
                             </div>
-                            <div className="p-3 bg-red-100 rounded-lg">
-                                <Package className="w-6 h-6 text-red-600" />
+                            <div className="p-3 bg-[#c17f54]/10 rounded-lg">
+                                <Package className="w-6 h-6 text-[#c17f54]" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Tabs Navigation */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+                {/* Category Selection */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {Object.entries(tabCategories).map(([key, category]) => {
+                        const IconComponent = category.icon;
+                        const isActive = activeCategory === key;
+                        
+                        return (
+                            <button
+                                key={key}
+                                onClick={() => {
+                                    setActiveCategory(key as CategoryType);
+                                    setActiveTab(category.tabs[0].key);
+                                    setSearchTerm('');
+                                }}
+                                className={`p-6 rounded-xl border-2 transition-all text-left ${
+                                    isActive 
+                                        ? 'bg-[#c17f54] text-white border-[#c17f54] shadow-lg'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:border-[#c17f54] hover:shadow-md'
+                                }`}
+                            >
+                                <div className="flex items-start gap-4">
+                                    <div className={`p-3 rounded-lg ${
+                                        isActive 
+                                            ? 'bg-white/20' 
+                                            : 'bg-[#c17f54]/10'
+                                    }`}>
+                                        <IconComponent className={`w-6 h-6 ${
+                                            isActive 
+                                                ? 'text-white' 
+                                                : 'text-[#c17f54]'
+                                        }`} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-lg mb-1">{category.label}</h3>
+                                        <p className={`text-sm ${isActive ? 'text-white/90' : 'text-gray-600'}`}>
+                                            {category.description}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-3 flex-wrap">
+                                            {category.tabs.map(tab => (
+                                                <span 
+                                                    key={tab.key}
+                                                    className={`text-xs px-2 py-1 rounded ${
+                                                        isActive 
+                                                            ? 'bg-white/20 text-white' 
+                                                            : 'bg-gray-100 text-gray-600'
+                                                    }`}
+                                                >
+                                                    {tab.label}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+
+                {/* Main Content Card */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                    {/* Tabs Navigation */}
                     <div className="border-b border-gray-200">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    {tabCategories[activeCategory].label}
+                                </h2>
+                                <p className="text-sm text-gray-600">
+                                    {tabCategories[activeCategory].tabs.find(t => t.key === activeTab)?.description}
+                                </p>
+                            </div>
+                        </div>
                         <nav className="flex overflow-x-auto">
-                            {[
-                                { key: 'staff' as const, label: 'Staff Management', icon: Users },
-                                { key: 'tables' as const, label: 'Table Management', icon: Table },
-                                { key: 'menu' as const, label: 'Menu Management', icon: Utensils },
-                                { key: 'stock' as const, label: 'Stock Management', icon: Package },
-                                { key: 'transactions' as const, label: 'Transactions', icon: CreditCard },
-                                { key: 'reservations' as const, label: 'Reservations', icon: BookOpen },
-                                { key: 'sessions' as const, label: 'Guest Sessions', icon: Clock },
-                                { key: 'stock-transactions' as const, label: 'Stock Transactions', icon: BarChart3 }
-                            ].map((tab) => {
+                            {tabCategories[activeCategory].tabs.map((tab) => {
                                 const IconComponent = tab.icon;
                                 return (
                                     <button
                                         key={tab.key}
                                         onClick={() => {
                                             setActiveTab(tab.key);
-                                            // Reset category filter ketika pindah tab
+                                            setSearchTerm('');
                                             if (tab.key !== 'menu') {
                                                 setSelectedCategory('all');
                                             }
                                         }}
-                                        className={`flex items-center gap-2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.key
-                                            ? 'border-orange-500 text-orange-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                            }`}
+                                        className={`flex items-center gap-2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
+                                            activeTab === tab.key
+                                                ? 'border-[#c17f54] text-[#c17f54] bg-[#c17f54]/5'
+                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                        }`}
                                     >
                                         <IconComponent className="w-4 h-4" />
                                         {tab.label}
@@ -739,7 +825,7 @@ export default function AdminDashboard() {
 
                     {/* Tab Content */}
                     <div className="p-6">
-                        {/* Search Bar */}
+                        {/* Search Bar and Actions */}
                         <div className="flex items-center gap-4 mb-6">
                             <div className="flex-1 relative">
                                 <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
@@ -748,32 +834,32 @@ export default function AdminDashboard() {
                                     placeholder={`Search ${activeTab}...`}
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900"
+                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54] text-gray-900"
                                 />
                             </div>
                             {showAddButton && (
                                 <button
                                     onClick={() => setShowAddModal(true)}
-                                    className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg transition-colors text-white bg-[#c17f54] hover:bg-[#b57049]"
                                 >
                                     <Plus className="w-4 h-4" />
                                     {getAddButtonText()}
                                 </button>
                             )}
-                            <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                            <button className="flex items-center gap-2 border border-gray-300 text-gray-700 px-4 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
                                 <Filter className="w-4 h-4" />
                                 Filter
                             </button>
                         </div>
 
-                        {/* Render different content based on active tab */}
+                        {/* Render Tab Content */}
                         {renderTabContent(
-                            activeTab, 
-                            filteredData, 
-                            openEditModal, 
-                            handleDeleteItem, 
-                            getStatusColor, 
-                            formatCurrency, 
+                            activeTab,
+                            filteredData,
+                            openEditModal,
+                            handleDeleteItem,
+                            getStatusColor,
+                            formatCurrency,
                             formatDateTime,
                             selectedCategory,
                             setSelectedCategory,
@@ -826,11 +912,11 @@ export default function AdminDashboard() {
                                     value={newCategoryName}
                                     onChange={(e) => setNewCategoryName(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
-                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54]"
                                 />
                                 <button 
                                     onClick={handleAddCategory}
-                                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 bg-[#c17f54] text-white rounded-lg hover:bg-[#b57049] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={!newCategoryName.trim()}
                                 >
                                     Add
@@ -840,8 +926,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             )}
-
-            {/* Add/Edit Modals would go here - similar to previous implementation */}
         </div>
     );
 }
@@ -862,30 +946,270 @@ function renderTabContent(
 ) {
     if (data.length === 0) {
         return (
-            <div className="text-center py-12">
-                <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No data found</p>
+            <div className="text-center py-16">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Package className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600 font-medium">No data found</p>
+                <p className="text-sm text-gray-500 mt-1">Try adjusting your search or filters</p>
             </div>
         );
     }
 
     switch (activeTab) {
+        case 'sessions':
+            return (
+                <div className="space-y-3">
+                    {data.map((session: any) => (
+                        <div key={session.id} className="bg-gradient-to-r from-gray-50 to-white rounded-lg p-5 border border-gray-200 hover:shadow-md transition-shadow">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-3 h-3 rounded-full ${session.status === 'active' ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+                                    <div>
+                                        <h4 className="font-bold text-gray-900 text-lg">{session.customerName}</h4>
+                                        <div className="flex items-center gap-3 mt-1">
+                                            <span className="text-sm text-gray-600 flex items-center gap-1">
+                                                <Table className="w-4 h-4" />
+                                                {session.tableNumber}
+                                            </span>
+                                            <span className="text-sm text-gray-600 flex items-center gap-1">
+                                                <Clock className="w-4 h-4" />
+                                                {session.duration}
+                                            </span>
+                                            <span className="text-sm text-gray-600">
+                                                {session.orderCount} orders
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-bold text-xl text-gray-900">{formatCurrency(session.totalSpent)}</p>
+                                    <p className="text-xs text-gray-500 mt-1">{formatDateTime(session.startTime)}</p>
+                                    <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(session.status)}`}>
+                                        {session.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+
+        case 'tables':
+            return (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {data.map((table: any) => (
+                        <div key={table.id} className="bg-white rounded-lg p-5 border-2 border-gray-200 hover:shadow-lg transition-all">
+                            <div className="flex items-start justify-between mb-3">
+                                <div>
+                                    <h4 className="font-bold text-lg text-gray-900">{table.number}</h4>
+                                    <p className="text-sm text-gray-600">{table.location}</p>
+                                </div>
+                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(table.status)}`}>
+                                    {table.status}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                                <Users className="w-4 h-4" />
+                                <span>{table.capacity} seats</span>
+                            </div>
+                            <div className="flex gap-2">
+                                <button 
+                                    onClick={() => onEdit(table)} 
+                                    className="flex-1 py-2 text-[#c17f54] bg-[#c17f54]/10 rounded-lg hover:bg-[#c17f54]/20 transition-colors text-sm font-medium"
+                                >
+                                    Edit
+                                </button>
+                                <button 
+                                    onClick={() => onDelete(table)} 
+                                    className="flex-1 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+
+        case 'reservations':
+            return (
+                <div className="overflow-hidden">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Customer</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Table</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date & Time</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Guests</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {data.map((reservation: any) => (
+                                <tr key={reservation.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="py-4 px-4">
+                                        <div>
+                                            <p className="font-medium text-gray-900">{reservation.customerName}</p>
+                                            <p className="text-sm text-gray-600">{reservation.phone}</p>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm font-medium text-gray-900">{reservation.tableNumber}</span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-900">{formatDateTime(reservation.date + ' ' + reservation.time)}</p>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm text-gray-900">{reservation.guests} people</span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(reservation.status)}`}>
+                                            {reservation.status}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button onClick={() => onEdit(reservation)} className="p-2 text-[#c17f54] hover:bg-[#c17f54]/10 rounded-lg transition-colors">
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                                                <Eye className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+
+        case 'transactions':
+            return (
+                <div className="overflow-hidden">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Transaction</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Customer</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Amount</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Payment</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {data.map((transaction: any) => (
+                                <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="py-4 px-4">
+                                        <p className="font-medium text-gray-900">{transaction.id}</p>
+                                        <p className="text-sm text-gray-600">{transaction.orderId}</p>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm text-gray-900">{transaction.customerName}</span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm font-bold text-gray-900">{formatCurrency(transaction.amount)}</span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm text-gray-600">{transaction.paymentMethod}</span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
+                                            {transaction.status}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4 text-sm text-gray-600">
+                                        {formatDateTime(transaction.date)}
+                                    </td>
+                                    <td className="py-4 px-4 text-right">
+                                        <button className="p-2 text-[#c17f54] hover:bg-[#c17f54]/10 rounded-lg transition-colors">
+                                            <Eye className="w-4 h-4" />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+
+        case 'stock-transactions':
+            return (
+                <div className="overflow-hidden">
+                    <table className="w-full">
+                        <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Item</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Type</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Quantity</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Reason</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">By</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                            {data.map((transaction: any) => (
+                                <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
+                                    <td className="py-4 px-4">
+                                        <div>
+                                            <p className="font-medium text-gray-900">{transaction.itemName}</p>
+                                            <p className="text-xs text-gray-500">{transaction.id}</p>
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.type)}`}>
+                                            {transaction.type.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <div className={`flex items-center gap-1 font-semibold ${transaction.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
+                                            {transaction.type === 'in' ? '+' : '-'}
+                                            {transaction.quantity} {transaction.unit}
+                                        </div>
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.reason)}`}>
+                                            {transaction.reason}
+                                        </span>
+                                        {transaction.notes && (
+                                            <p className="text-xs text-gray-500 mt-1">{transaction.notes}</p>
+                                        )}
+                                    </td>
+                                    <td className="py-4 px-4 text-sm text-gray-600">
+                                        {formatDateTime(transaction.date)}
+                                    </td>
+                                    <td className="py-4 px-4">
+                                        <span className="text-sm text-gray-900">{transaction.performedBy}</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            );
+
         case 'staff':
             return (
                 <div className="overflow-hidden">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Staff Member</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Position</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Join Date</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Last Login</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Staff Member</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Position</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Join Date</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Last Login</th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {data.map((staff) => (
+                            {data.map((staff: any) => (
                                 <tr key={staff.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="py-4 px-4">
                                         <div>
@@ -894,7 +1218,7 @@ function renderTabContent(
                                         </div>
                                     </td>
                                     <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{staff.position}</span>
+                                        <span className="text-sm font-medium text-gray-900">{staff.position}</span>
                                     </td>
                                     <td className="py-4 px-4">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(staff.status)}`}>
@@ -909,57 +1233,10 @@ function renderTabContent(
                                     </td>
                                     <td className="py-4 px-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => onEdit(staff)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                            <button onClick={() => onEdit(staff)} className="p-2 text-[#c17f54] hover:bg-[#c17f54]/10 rounded-lg transition-colors">
                                                 <Edit className="w-4 h-4" />
                                             </button>
                                             <button onClick={() => onDelete(staff)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-
-        case 'tables':
-            return (
-                <div className="overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Table Label</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Seats</th>
-                                {/* <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Location</th> */}
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {data.map((table) => (
-                                <tr key={table.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-4">
-                                        <p className="font-medium text-gray-900">{table.number}</p>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{table.capacity} people</span>
-                                    </td>
-                                    {/* <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-600">{table.location}</span>
-                                    </td> */}
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(table.status)}`}>
-                                            {table.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => onEdit(table)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button onClick={() => onDelete(table)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -982,86 +1259,64 @@ function renderTabContent(
                                 onClick={() => setSelectedCategory?.(category)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                                     selectedCategory === category
-                                        ? 'bg-orange-500 text-white'
+                                        ? 'bg-[#c17f54] text-white shadow-md'
                                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                             >
                                 {category === 'all' ? 'All Categories' : category}
                             </button>
                         ))}
-                        {/* Manage Categories Button */}
                         <button
                             onClick={() => setShowCategoryManager?.(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-orange-600 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors whitespace-nowrap"
+                            className="flex items-center gap-2 px-4 py-2 text-[#c17f54] bg-[#c17f54]/10 rounded-lg hover:bg-[#c17f54]/20 transition-colors whitespace-nowrap"
                         >
                             <Plus className="w-4 h-4" />
-                            Manage Categories
+                            Manage
                         </button>
                     </div>
 
-                    {/* Menu Items Table */}
-                    <div className="overflow-hidden">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Menu Item</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Category</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Price</th>
-                                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                    <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-200">
-                                {data.map((item) => (
-                                    <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 px-4">
-                                            <div className="flex items-center gap-3">
-                                                {item.image ? (
-                                                    <Image
-                                                        src={item.image}
-                                                        alt={item.name}
-                                                        width={40}
-                                                        height={40}
-                                                        className="rounded-lg object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
-                                                        <Utensils className="w-5 h-5 text-gray-400" />
-                                                    </div>
-                                                )}
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{item.name}</p>
-                                                    <p className="text-sm text-gray-600">{item.ingredients.join(', ')}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {/* Menu Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {data.map((item: any) => (
+                            <div key={item.id} className="bg-white rounded-lg border-2 border-gray-200 hover:shadow-lg transition-all overflow-hidden">
+                                <div className="aspect-video bg-gradient-to-br from-[#c17f54]/10 to-[#c17f54]/20 flex items-center justify-center">
+                                    <Utensils className="w-12 h-12 text-[#c17f54]" />
+                                </div>
+                                <div className="p-4">
+                                    <div className="flex items-start justify-between mb-2">
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-gray-900">{item.name}</h4>
+                                            <p className="text-xs text-gray-600 mt-1">{item.ingredients.join(', ')}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusColor(item.status)}`}>
+                                            {item.status === 'out-of-stock' ? 'Out' : 'Available'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between mt-3">
+                                        <div>
+                                            <span className="text-lg font-bold text-gray-900">{formatCurrency(item.price)}</span>
+                                            <span className={`ml-2 text-xs px-2 py-1 rounded-full bg-[#c17f54]/10 text-[#c17f54]`}>
                                                 {item.category}
                                             </span>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className="text-sm font-semibold text-gray-900">{formatCurrency(item.price)}</span>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>
-                                                {item.status.replace('-', ' ')}
-                                            </span>
-                                        </td>
-                                        <td className="py-4 px-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <button onClick={() => onEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                    <Edit className="w-4 h-4" />
-                                                </button>
-                                                <button onClick={() => onDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
+                                        <button 
+                                            onClick={() => onEdit(item)} 
+                                            className="flex-1 py-2 text-[#c17f54] bg-[#c17f54]/10 rounded-lg hover:bg-[#c17f54]/20 transition-colors text-sm font-medium"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button 
+                                            onClick={() => onDelete(item)} 
+                                            className="flex-1 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             );
@@ -1071,17 +1326,17 @@ function renderTabContent(
                 <div className="overflow-hidden">
                     <table className="w-full">
                         <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Item Name</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Category</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Current Stock</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Min Stock</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Item Name</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Category</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Current Stock</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Min Stock</th>
+                                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
+                                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {data.map((item) => (
+                            {data.map((item: any) => (
                                 <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="py-4 px-4">
                                         <p className="font-medium text-gray-900">{item.name}</p>
@@ -1090,7 +1345,7 @@ function renderTabContent(
                                         <span className="text-sm text-gray-900">{item.category}</span>
                                     </td>
                                     <td className="py-4 px-4">
-                                        <span className="text-sm font-semibold text-gray-900">
+                                        <span className="text-sm font-bold text-gray-900">
                                             {item.currentStock} {item.unit}
                                         </span>
                                     </td>
@@ -1104,211 +1359,13 @@ function renderTabContent(
                                     </td>
                                     <td className="py-4 px-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => onEdit(item)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                            <button onClick={() => onEdit(item)} className="p-2 text-[#c17f54] hover:bg-[#c17f54]/10 rounded-lg transition-colors">
                                                 <Edit className="w-4 h-4" />
                                             </button>
                                             <button onClick={() => onDelete(item)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
                                         </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-
-        case 'transactions':
-            return (
-                <div className="overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Transaction ID</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Customer</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Amount</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Payment Method</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Date</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {data.map((transaction) => (
-                                <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-4">
-                                        <p className="font-medium text-gray-900">{transaction.id}</p>
-                                        <p className="text-sm text-gray-600">{transaction.orderId}</p>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{transaction.customerName}</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm font-semibold text-gray-900">{formatCurrency(transaction.amount)}</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-600">{transaction.paymentMethod}</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.status)}`}>
-                                            {transaction.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-sm text-gray-600">
-                                        {formatDateTime(transaction.date)}
-                                    </td>
-                                    <td className="py-4 px-4 text-right">
-                                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                            <Eye className="w-4 h-4" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-
-        case 'reservations':
-            return (
-                <div className="overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Customer</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Table</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Date & Time</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Guests</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Status</th>
-                                <th className="text-right py-3 px-4 text-sm font-medium text-gray-600">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {data.map((reservation) => (
-                                <tr key={reservation.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-4">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{reservation.customerName}</p>
-                                            <p className="text-sm text-gray-600">{reservation.phone}</p>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{reservation.tableNumber}</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <div>
-                                            <p className="text-sm text-gray-900">{formatDateTime(reservation.date + ' ' + reservation.time)}</p>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{reservation.guests} people</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(reservation.status)}`}>
-                                            {reservation.status}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4 text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <button onClick={() => onEdit(reservation)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-
-        case 'sessions':
-            return (
-                <div className="space-y-4">
-                    {data.map((session) => (
-                        <div key={session.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className={`w-3 h-3 rounded-full ${session.status === 'active' ? 'bg-green-500' : 'bg-gray-500'}`}></div>
-                                    <div>
-                                        <h4 className="font-semibold text-gray-900">{session.customerName}</h4>
-                                        <p className="text-sm text-gray-600">{session.tableNumber}</p>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <p className="font-semibold text-gray-900">{formatCurrency(session.totalSpent)}</p>
-                                    <p className="text-sm text-gray-600">{session.duration}</p>
-                                </div>
-                            </div>
-                            <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-                                <div className="flex items-center gap-4">
-                                    <span>Started: {formatDateTime(session.startTime)}</span>
-                                    <span>•</span>
-                                    <span>{session.orderCount} orders</span>
-                                </div>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(session.status)}`}>
-                                    {session.status}
-                                </span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
-
-        case 'stock-transactions':
-            return (
-                <div className="overflow-hidden">
-                    <table className="w-full">
-                        <thead>
-                            <tr className="border-b border-gray-200">
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Transaction</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Item</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Type</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Quantity</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Reason</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Date</th>
-                                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">Performed By</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {data.map((transaction) => (
-                                <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="py-4 px-4">
-                                        <p className="font-medium text-gray-900">{transaction.id}</p>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <div>
-                                            <p className="font-medium text-gray-900">{transaction.itemName}</p>
-                                            <p className="text-sm text-gray-600">ID: {transaction.itemId}</p>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.type)}`}>
-                                            {transaction.type.toUpperCase()}
-                                        </span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <div className={`flex items-center gap-1 ${transaction.type === 'in' ? 'text-green-600' : 'text-red-600'}`}>
-                                            {transaction.type === 'in' ? '+' : '-'}
-                                            <span className="font-semibold">
-                                                {transaction.quantity} {transaction.unit}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(transaction.reason)}`}>
-                                            {transaction.reason}
-                                        </span>
-                                        {transaction.notes && (
-                                            <p className="text-xs text-gray-500 mt-1">{transaction.notes}</p>
-                                        )}
-                                    </td>
-                                    <td className="py-4 px-4 text-sm text-gray-600">
-                                        {formatDateTime(transaction.date)}
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-sm text-gray-900">{transaction.performedBy}</span>
                                     </td>
                                 </tr>
                             ))}
