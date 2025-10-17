@@ -5,7 +5,7 @@ import {
     Users, UserPlus, Edit, Trash2, Eye, Search, Filter, Clock, Calendar,
     Mail, Phone, MapPin, MoreVertical, ArrowLeft, Table, Utensils,
     Package, CreditCard, BookOpen, Plus, BarChart3, X, Activity,
-    Settings, TrendingUp, Database
+    Settings, TrendingUp, Database, DollarSign, Download // TAMBAHKAN INI
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -91,6 +91,19 @@ interface StockTransaction {
     notes?: string;
     date: string;
     performedBy: string;
+}
+
+interface RevenueData {
+    id: string;
+    date: string;
+    revenue: number;
+    orders: number;
+    averageOrder: number;
+    paymentMethods: {
+        cash: number;
+        qris: number;
+        creditCard: number;
+    };
 }
 
 const sampleStaff: Staff[] = [
@@ -422,20 +435,59 @@ const sampleStockTransactions: StockTransaction[] = [
     }
 ];
 
+const sampleRevenue: RevenueData[] = [
+    {
+        id: 'REV-001',
+        date: '2024-12-20',
+        revenue: 2800000,
+        orders: 45,
+        averageOrder: 62222,
+        paymentMethods: {
+            cash: 1200000,
+            qris: 1000000,
+            creditCard: 600000
+        }
+    },
+    {
+        id: 'REV-002',
+        date: '2024-12-19',
+        revenue: 2500000,
+        orders: 38,
+        averageOrder: 65789,
+        paymentMethods: {
+            cash: 1100000,
+            qris: 800000,
+            creditCard: 600000
+        }
+    },
+    {
+        id: 'REV-003',
+        date: '2024-12-18',
+        revenue: 3200000,
+        orders: 52,
+        averageOrder: 61538,
+        paymentMethods: {
+            cash: 1400000,
+            qris: 1200000,
+            creditCard: 600000
+        }
+    }
+];
+
 const initialCategories = ['all', 'Main Course', 'Beverage', 'Dessert', 'Appetizer'];
 
 type TabType = 'sessions' | 'tables' | 'reservations' | 'transactions' | 'stock-transactions' | 'staff' | 'menu' | 'stock';
 type CategoryType = 'realtime' | 'master';
 
 export default function AdminDashboard() {
-    const [activeCategory, setActiveCategory] = useState<CategoryType>('realtime');
+    const [activeCategory, setActiveCategory] = useState<CategoryType>('master');
     const [activeTab, setActiveTab] = useState<TabType>('sessions');
     const [searchTerm, setSearchTerm] = useState('');
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [newItem, setNewItem] = useState({});
-    
+
     const [selectedCategory, setSelectedCategory] = useState<'all' | string>('all');
     const [menuCategories, setMenuCategories] = useState<string[]>(initialCategories);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -463,6 +515,7 @@ export default function AdminDashboard() {
                 { key: 'tables' as const, label: 'Table Management', icon: Table, description: 'Real-time table availability' },
                 { key: 'menu' as const, label: 'Menu Management', icon: Utensils, description: 'Food & beverage catalog' },
                 { key: 'staff' as const, label: 'Staff Management', icon: Users, description: 'Employee records' },
+                { key: 'revenue' as const, label: 'Revenue', icon: TrendingUp, description: 'Sales & financial reports' },
             ]
         }
     };
@@ -491,11 +544,11 @@ export default function AdminDashboard() {
                     item.name.toLowerCase().includes(term) ||
                     item.category.toLowerCase().includes(term)
                 );
-                
+
                 if (selectedCategory !== 'all') {
                     filteredMenu = filteredMenu.filter(item => item.category === selectedCategory);
                 }
-                
+
                 return filteredMenu;
             case 'stock':
                 return sampleStock.filter(item =>
@@ -518,6 +571,10 @@ export default function AdminDashboard() {
                     transaction.reason.toLowerCase().includes(term) ||
                     transaction.performedBy.toLowerCase().includes(term) ||
                     transaction.type.toLowerCase().includes(term)
+                );
+            case 'revenue':
+                return sampleRevenue.filter(revenue =>
+                    revenue.date.toLowerCase().includes(term)
                 );
             default:
                 return [];
@@ -726,10 +783,10 @@ export default function AdminDashboard() {
 
                 {/* Category Selection */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {Object.entries(tabCategories).map(([key, category]) => {
+                    {Object.entries(tabCategories).reverse().map(([key, category]) => {
                         const IconComponent = category.icon;
                         const isActive = activeCategory === key;
-                        
+
                         return (
                             <button
                                 key={key}
@@ -738,23 +795,20 @@ export default function AdminDashboard() {
                                     setActiveTab(category.tabs[0].key);
                                     setSearchTerm('');
                                 }}
-                                className={`p-6 rounded-xl border-2 transition-all text-left ${
-                                    isActive 
-                                        ? 'bg-[#c17f54] text-white border-[#c17f54] shadow-lg'
-                                        : 'bg-white text-gray-700 border-gray-200 hover:border-[#c17f54] hover:shadow-md'
-                                }`}
+                                className={`p-6 rounded-xl border-2 transition-all text-left ${isActive
+                                    ? 'bg-[#c17f54] text-white border-[#c17f54] shadow-lg'
+                                    : 'bg-white text-gray-700 border-gray-200 hover:border-[#c17f54] hover:shadow-md'
+                                    }`}
                             >
                                 <div className="flex items-start gap-4">
-                                    <div className={`p-3 rounded-lg ${
-                                        isActive 
-                                            ? 'bg-white/20' 
-                                            : 'bg-[#c17f54]/10'
-                                    }`}>
-                                        <IconComponent className={`w-6 h-6 ${
-                                            isActive 
-                                                ? 'text-white' 
-                                                : 'text-[#c17f54]'
-                                        }`} />
+                                    <div className={`p-3 rounded-lg ${isActive
+                                        ? 'bg-white/20'
+                                        : 'bg-[#c17f54]/10'
+                                        }`}>
+                                        <IconComponent className={`w-6 h-6 ${isActive
+                                            ? 'text-white'
+                                            : 'text-[#c17f54]'
+                                            }`} />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-lg mb-1">{category.label}</h3>
@@ -763,13 +817,12 @@ export default function AdminDashboard() {
                                         </p>
                                         <div className="flex items-center gap-2 mt-3 flex-wrap">
                                             {category.tabs.map(tab => (
-                                                <span 
+                                                <span
                                                     key={tab.key}
-                                                    className={`text-xs px-2 py-1 rounded ${
-                                                        isActive 
-                                                            ? 'bg-white/20 text-white' 
-                                                            : 'bg-gray-100 text-gray-600'
-                                                    }`}
+                                                    className={`text-xs px-2 py-1 rounded ${isActive
+                                                        ? 'bg-white/20 text-white'
+                                                        : 'bg-gray-100 text-gray-600'
+                                                        }`}
                                                 >
                                                     {tab.label}
                                                 </span>
@@ -809,11 +862,10 @@ export default function AdminDashboard() {
                                                 setSelectedCategory('all');
                                             }
                                         }}
-                                        className={`flex items-center gap-2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${
-                                            activeTab === tab.key
-                                                ? 'border-[#c17f54] text-[#c17f54] bg-[#c17f54]/5'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                                        }`}
+                                        className={`flex items-center gap-2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.key
+                                            ? 'border-[#c17f54] text-[#c17f54] bg-[#c17f54]/5'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                                            }`}
                                     >
                                         <IconComponent className="w-4 h-4" />
                                         {tab.label}
@@ -872,11 +924,11 @@ export default function AdminDashboard() {
 
             {/* Category Manager Modal */}
             {showCategoryManager && (
-                <div 
+                <div
                     className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
                     onClick={() => setShowCategoryManager(false)}
                 >
-                    <div 
+                    <div
                         className="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -895,7 +947,7 @@ export default function AdminDashboard() {
                                     <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                         <span className="font-medium text-gray-900">{category}</span>
                                         <div className="flex items-center gap-2">
-                                            <button 
+                                            <button
                                                 onClick={() => handleDeleteCategory(category)}
                                                 className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
                                             >
@@ -914,7 +966,7 @@ export default function AdminDashboard() {
                                     onKeyPress={(e) => e.key === 'Enter' && handleAddCategory()}
                                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c17f54] focus:border-[#c17f54]"
                                 />
-                                <button 
+                                <button
                                     onClick={handleAddCategory}
                                     className="px-4 py-2 bg-[#c17f54] text-white rounded-lg hover:bg-[#b57049] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled={!newCategoryName.trim()}
@@ -1014,14 +1066,14 @@ function renderTabContent(
                                 <span>{table.capacity} seats</span>
                             </div>
                             <div className="flex gap-2">
-                                <button 
-                                    onClick={() => onEdit(table)} 
+                                <button
+                                    onClick={() => onEdit(table)}
                                     className="flex-1 py-2 text-[#c17f54] bg-[#c17f54]/10 rounded-lg hover:bg-[#c17f54]/20 transition-colors text-sm font-medium"
                                 >
                                     Edit
                                 </button>
-                                <button 
-                                    onClick={() => onDelete(table)} 
+                                <button
+                                    onClick={() => onDelete(table)}
                                     className="flex-1 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
                                 >
                                     Delete
@@ -1257,11 +1309,10 @@ function renderTabContent(
                             <button
                                 key={category}
                                 onClick={() => setSelectedCategory?.(category)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                                    selectedCategory === category
-                                        ? 'bg-[#c17f54] text-white shadow-md'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${selectedCategory === category
+                                    ? 'bg-[#c17f54] text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    }`}
                             >
                                 {category === 'all' ? 'All Categories' : category}
                             </button>
@@ -1301,14 +1352,14 @@ function renderTabContent(
                                         </div>
                                     </div>
                                     <div className="flex gap-2 mt-3 pt-3 border-t border-gray-200">
-                                        <button 
-                                            onClick={() => onEdit(item)} 
+                                        <button
+                                            onClick={() => onEdit(item)}
                                             className="flex-1 py-2 text-[#c17f54] bg-[#c17f54]/10 rounded-lg hover:bg-[#c17f54]/20 transition-colors text-sm font-medium"
                                         >
                                             Edit
                                         </button>
-                                        <button 
-                                            onClick={() => onDelete(item)} 
+                                        <button
+                                            onClick={() => onDelete(item)}
                                             className="flex-1 py-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
                                         >
                                             Delete
@@ -1374,6 +1425,127 @@ function renderTabContent(
                 </div>
             );
 
+        case 'revenue':
+            return (
+                <div className="space-y-6">
+                    {/* Revenue Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-green-800">Total Revenue</p>
+                                    <p className="text-2xl font-bold text-green-900 mt-1">
+                                        {formatCurrency(data.reduce((acc: number, rev: RevenueData) => acc + rev.revenue, 0))}
+                                    </p>
+                                </div>
+                                <DollarSign className="w-8 h-8 text-green-600" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-blue-800">Total Orders</p>
+                                    <p className="text-2xl font-bold text-blue-900 mt-1">
+                                        {data.reduce((acc: number, rev: RevenueData) => acc + rev.orders, 0)}
+                                    </p>
+                                </div>
+                                <CreditCard className="w-8 h-8 text-blue-600" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-purple-800">Avg. Order Value</p>
+                                    <p className="text-2xl font-bold text-purple-900 mt-1">
+                                        {formatCurrency(Math.round(data.reduce((acc: number, rev: RevenueData) => acc + rev.averageOrder, 0) / data.length))}
+                                    </p>
+                                </div>
+                                <TrendingUp className="w-8 h-8 text-purple-600" />
+                            </div>
+                        </div>
+
+                        <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-xl p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm font-medium text-orange-800">Growth Rate</p>
+                                    <p className="text-2xl font-bold text-orange-900 mt-1">+12%</p>
+                                </div>
+                                <Activity className="w-8 h-8 text-orange-600" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Revenue Table */}
+                    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Date</th>
+                                        <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Revenue</th>
+                                        <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Orders</th>
+                                        <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Avg/Order</th>
+                                        <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Payment Methods</th>
+                                        <th className="text-right py-4 px-6 text-sm font-semibold text-gray-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {data.map((revenue: RevenueData) => (
+                                        <tr key={revenue.id} className="hover:bg-gray-50 transition-colors">
+                                            <td className="py-4 px-6">
+                                                <p className="font-medium text-gray-900">
+                                                    {new Date(revenue.date).toLocaleDateString('id-ID', {
+                                                        day: 'numeric',
+                                                        month: 'long',
+                                                        year: 'numeric'
+                                                    })}
+                                                </p>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <p className="font-bold text-lg text-gray-900">{formatCurrency(revenue.revenue)}</p>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <span className="text-sm text-gray-900">{revenue.orders} orders</span>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <span className="text-sm font-medium text-gray-900">{formatCurrency(revenue.averageOrder)}</span>
+                                            </td>
+                                            <td className="py-4 px-6">
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="text-gray-600">Cash:</span>
+                                                        <span className="font-medium text-gray-600">{formatCurrency(revenue.paymentMethods.cash)}</span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="text-gray-600">QRIS:</span>
+                                                        <span className="font-medium text-gray-600">{formatCurrency(revenue.paymentMethods.qris)}</span>
+                                                    </div>
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="text-gray-600">Credit Card:</span>
+                                                        <span className="font-medium text-gray-600">{formatCurrency(revenue.paymentMethods.creditCard)}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="py-4 px-6 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <button className="p-2 text-[#c17f54] hover:bg-[#c17f54]/10 rounded-lg transition-colors">
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
+                                                    <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                                        <Download className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
         default:
             return null;
     }

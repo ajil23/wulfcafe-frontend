@@ -2,13 +2,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Utensils, ChefHat, Grid3x3, Clock, Users, ArrowRight, Calendar } from 'lucide-react';
+import { Utensils, ChefHat, Grid3x3, Clock, Users, ArrowRight, Calendar, CheckCircle, DollarSign, TrendingUp, Star, Package } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function StaffDashboard() {
     const [username] = useState('satria');
-    
+
     const quickActions = [
         {
             title: 'Order Monitor',
@@ -121,10 +121,10 @@ export default function StaffDashboard() {
                     <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-2">
                             <Clock className="w-4 h-4" />
-                            <span>{new Date().toLocaleTimeString('id-ID', { 
-                                hour: '2-digit', 
+                            <span>{new Date().toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
                                 minute: '2-digit',
-                                hour12: false 
+                                hour12: false
                             })}</span>
                         </div>
                     </div>
@@ -132,25 +132,78 @@ export default function StaffDashboard() {
             </div>
 
             <div className="container mx-auto px-6 py-8">
-                {/* Welcome Section */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">
-                                Good {getGreetingTime()}, {username}!
-                            </h2>
-                            <p className="text-gray-600">
-                                Here's what's happening in your restaurant today.
-                            </p>
+                {/* Quick Stats - Improved Layout */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    {/* Table Status Card */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-gray-900">Table Status</h3>
+                            <Users className="w-5 h-5 text-blue-500" />
                         </div>
-                        <div className="flex items-center gap-4 text-sm">
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-orange-600">4</div>
-                                <div className="text-gray-500">Active Orders</div>
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-600">Total Tables</span>
+                                <span className="font-bold text-gray-900">12</span>
                             </div>
-                            <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600">8</div>
-                                <div className="text-gray-500">Available Tables</div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-600">Available</span>
+                                <span className="font-bold text-green-600">8</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-600">Occupied</span>
+                                <span className="font-bold text-red-600">3</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm text-gray-600">Reserved</span>
+                                <span className="font-bold text-yellow-600">1</span>
+                            </div>
+                            <div className="pt-2 border-t border-gray-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-gray-700">Occupancy Rate</span>
+                                    <span className="font-bold text-blue-600">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Revenue Card */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-gray-900">Today's Revenue</h3>
+                            <DollarSign className="w-5 h-5 text-green-500" />
+                        </div>
+                        <div className="text-3xl font-bold text-gray-900 mb-2">Rp 2.8M</div>
+                        <div className="flex items-center gap-2 text-sm">
+                            <TrendingUp className="w-4 h-4 text-green-500" />
+                            <span className="text-green-600 font-medium">+12% from yesterday</span>
+                        </div>
+                        <div className="mt-4 text-xs text-gray-500">
+                            Last updated: {new Date().toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Orders Card */}
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="font-semibold text-gray-900">Active Orders</h3>
+                            <Package className="w-5 h-5 text-orange-500" />
+                        </div>
+                        <div className="text-3xl font-bold text-gray-900 mb-2">8</div>
+                        <div className="space-y-2 text-sm">
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Pending Kitchen</span>
+                                <span className="font-medium text-orange-600">3</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">Ready to Serve</span>
+                                <span className="font-medium text-green-600">2</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-gray-600">In Progress</span>
+                                <span className="font-medium text-blue-600">3</span>
                             </div>
                         </div>
                     </div>
@@ -250,38 +303,7 @@ export default function StaffDashboard() {
                         </div>
                     </div>
                 </div>
-
-                {/* Quick Stats */}
-                <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-center">
-                        <div className="text-2xl font-bold text-orange-600">12</div>
-                        <div className="text-gray-600 text-sm">Total Tables</div>
-                    </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-center">
-                        <div className="text-2xl font-bold text-blue-600">8</div>
-                        <div className="text-gray-600 text-sm">Available</div>
-                    </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-center">
-                        <div className="text-2xl font-bold text-red-600">3</div>
-                        <div className="text-gray-600 text-sm">Occupied</div>
-                    </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 text-center">
-                        <div className="text-2xl font-bold text-yellow-600">1</div>
-                        <div className="text-gray-600 text-sm">Reserved</div>
-                    </div>
-                </div>
             </div>
         </div>
     );
 }
-
-// Helper function untuk greeting berdasarkan waktu
-function getGreetingTime() {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Morning';
-    if (hour < 18) return 'Afternoon';
-    return 'Evening';
-}
-
-// Tambahkan import untuk CheckCircle jika belum ada
-import { CheckCircle } from 'lucide-react';
